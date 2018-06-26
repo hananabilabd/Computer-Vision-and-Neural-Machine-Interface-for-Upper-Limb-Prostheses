@@ -13,8 +13,8 @@ import pyqtgraph as pg
 import pyqtgraph
 import random
 import sys, time
-import RealTime
-import poweroff
+#import RealTime
+#import poweroff
 Ui_MainWindow, QMainWindow = loadUiType('GP.ui')
 
 class Main(QMainWindow, Ui_MainWindow):
@@ -24,12 +24,16 @@ class Main(QMainWindow, Ui_MainWindow):
         #pyqtgraph.setConfigOption('background', 'w')  # before loading widget
         super(Main, self).__init__()
         self.setupUi(self)
-        self.Real = RealTime.RealTime()
-        self.Poweroff=poweroff.poweroff
+        #self.Real = RealTime.RealTime()
+        #self.Poweroff=poweroff.poweroff
         #self.emgplot = pg.PlotWidget( name='EMGplot' )
         self.emgplot.setRange( QtCore.QRectF( -50, -200, 1000, 1400 ) )
         self.emgplot.disableAutoRange()
         self.emgplot.setTitle( "EMG" )
+
+        self.textBrowser.setText( "stdouterr" )
+        self.textBrowser.insertPlainText("yA Rab \n")
+
 
         self.refreshRate = 0.05
 
@@ -42,9 +46,10 @@ class Main(QMainWindow, Ui_MainWindow):
 
         self.lastUpdateTime = time.time()
         self.show()
-        
+
+        self.pushButton_5.clicked.connect( self.clear )
         #self.pushButton.clicked.connect( self.Real.start_MYO())
-        self.pushButton.clicked.connect( self.Poweroff.power_off())
+        #self.pushButton.clicked.connect( self.Poweroff.power_off())
         #self.pushButton_2.clicked.connect( self.Real.thread_new() )
         #self.pushButton.clicked.connect(self.browse_wav)
         #self.pushButton.clicked.connect(self.file_save_txt)
@@ -59,6 +64,9 @@ class Main(QMainWindow, Ui_MainWindow):
         self.EMG3.plotItem.showGrid(True, True, 0.7)
         self.EMG4.plotItem.showGrid(True, True, 0.7)
         #self.grFFT.plotItem.setRange(yRange=[0, 1])
+
+    def clear(self):
+        self.textBrowser.clear()
 
     def plotter(self):
 
