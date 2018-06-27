@@ -22,7 +22,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <property name="movable">
            <bool>true</bool>
@@ -195,14 +195,14 @@
           </widget>
           <widget class="QWidget" name="tab_2">
            <attribute name="title">
-            <string>Prediction</string>
+            <string>EMG_Plot</string>
            </attribute>
            <widget class="PlotWidget" name="emgplot">
             <property name="geometry">
              <rect>
-              <x>40</x>
+              <x>30</x>
               <y>10</y>
-              <width>811</width>
+              <width>791</width>
               <height>421</height>
              </rect>
             </property>
@@ -210,10 +210,90 @@
              <string>EMG Plot</string>
             </property>
            </widget>
+           <widget class="QPushButton" name="pushButton_7">
+            <property name="geometry">
+             <rect>
+              <x>830</x>
+              <y>160</y>
+              <width>101</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Start Plot</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_8">
+            <property name="geometry">
+             <rect>
+              <x>830</x>
+              <y>230</y>
+              <width>101</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Stop Plot</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QWidget" name="tab_3">
            <attribute name="title">
-            <string>something</string>
+            <string>Training</string>
+           </attribute>
+           <widget class="QPushButton" name="pushButton_9">
+            <property name="geometry">
+             <rect>
+              <x>690</x>
+              <y>290</y>
+              <width>101</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Save (.csv)</string>
+            </property>
+           </widget>
+           <widget class="QLineEdit" name="lineEdit">
+            <property name="geometry">
+             <rect>
+              <x>520</x>
+              <y>290</y>
+              <width>113</width>
+              <height>33</height>
+             </rect>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_9">
+            <property name="geometry">
+             <rect>
+              <x>156</x>
+              <y>290</y>
+              <width>321</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Number of Records you want to save in .cvs</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_10">
+            <property name="geometry">
+             <rect>
+              <x>690</x>
+              <y>220</y>
+              <width>101</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Save (.pickle)</string>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="tab_4">
+           <attribute name="title">
+            <string>Testing</string>
            </attribute>
           </widget>
          </widget>
@@ -242,33 +322,40 @@
          <item>
           <widget class="QPushButton" name="pushButton">
            <property name="text">
-            <string>Predict</string>
+            <string>Connect MYO</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_2">
            <property name="text">
-            <string>Stop</string>
+            <string>Start Prediction</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_3">
            <property name="text">
-            <string>Disconnect MYO</string>
+            <string>Stop Prediction</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_4">
            <property name="text">
-            <string>Power OFF MYO</string>
+            <string>Disconnect MYO</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_5">
+           <property name="text">
+            <string>Power OFF MYO</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_6">
            <property name="text">
             <string>Clear Console</string>
            </property>
@@ -287,7 +374,7 @@
      <x>0</x>
      <y>0</y>
      <width>1220</width>
-     <height>21</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

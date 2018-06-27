@@ -16,24 +16,30 @@ import time
 #from test import MyoRaw
 import open_myo as myo
 import threading
-
+import GP
 class RealTime():
 
-    def __init__(self, dev=None):
-        self.thread1 = None
-        self.thread2 = None
-        self.stop_threads = threading.Event()
+    def __init__(self, parent=None):
+        #super(RealTime, self).__init__()
+        #self.setupUi(self)
+   
 
         self.b = np.empty( [0, 8] )
         self.predictions_array = []
         self.emg_total = np.empty( [0, 8] )
         self.iteration = 0
+        self.Flag_Graph=None
+        self.Flag_Predict =None
+        #self.set_GP_instance(GP)
         
+    def set_GP_instance(self,GP):
+        self.GP=GP
         
 
 
-
-
+    def test(self):
+        self.GP.textBrowser.insertPlainText("yA Rabyyyyyyy otorha \n")
+        self.GP.textBrowser.setText( "God" )
 
 #search on Hampel filter to remove spikes. and make notch filter on 50 hz
     def filteration (self,data,sample_rate=2000.0,cut_off=20.0,order=5,ftype='highpass'):
@@ -119,14 +125,17 @@ class RealTime():
     def start_MYO(self):
         myo_mac_addr = myo.get_myo()
         print("MAC address: %s" % myo_mac_addr)
+     
         self.myo_device = myo.Device()
         self.myo_device.services.sleep_mode( 1 )  # never sleep
         self.myo_device.services.set_leds( [128, 128, 255], [128, 128, 255] )  # purple logo and bar LEDs)
         self.myo_device.services.vibrate( 1 )  # short vibration
         fw = self.myo_device.services.firmware()
-        print("Firmware version: %d.%d.%d.%d" % (fw[0], fw[1], fw[2], fw[3]))
+        print("Firmware version: %d.%d.%d.%d   \n" % (fw[0], fw[1], fw[2], fw[3]))
+     
         batt = self.myo_device.services.battery()
         print("Battery level: %d" % batt)
+       
         # myo_device.services.emg_filt_notifications()
         self.myo_device.services.emg_raw_notifications()
         # myo_device.services.imu_notifications()
@@ -138,6 +147,7 @@ class RealTime():
         # myo_device.add_imu_event_handler(process_imu)
         # myo_device.add_sync_event_handler(process_sync)
         # myo_device.add_classifier_event_hanlder(process_classifier)
+        #self.textBrowser.insertPlainText("yA Rabyyyyyyy otorha \n")
 
 
 
@@ -158,9 +168,14 @@ class RealTime():
         #global b
         ## for RAW_EMG
         self.b = np.append( self.b, emg, axis=0 )
-        if self.b.shape[0] == 512:
+        print (self.b.shape)
+        if  self.b.shape[0] == 512:
             # final(b)
             self.predictions_array.append( self.predict( self.b ) )
+        #elif self.Flag_Graph == True and self.b.shape[0] ==1000 :
+            #self.b= np.empty([0,8])
+            
+            
 
             ## For Filtered_EMG
             # b= np.append(b,[[emg[0],emg[1],emg[2],emg[3],emg[4],emg[5],emg[6],emg[7]]],0)
@@ -191,19 +206,17 @@ class RealTime():
     def start_thread(self):
         self.stop_threads.clear()
         self.thread1 = threading.Thread( target=self.loop1 )
-
         self.thread1.start()
 
     def loop1(self):
-        if self.myo_device.services.waitForNotifications( 1 ):
-            print(self.predictions_array)
-        else:
-            print("Waiting...")
-
-        #while not self.stop_threads.is_set():
-        if not self.stop_threads.is_set():
-            self.start_thread()
-            print ("Hello")
+     
+        while not self.stop_threads.is_set():
+        #if not self.stop_threads.is_set():
+            if self.myo_device.services.waitForNotifications( 1 ):
+                print(self.predictions_array)
+            else:
+                print("Waiting...")
+         
 
 
 

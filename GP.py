@@ -13,9 +13,43 @@ import pyqtgraph as pg
 import pyqtgraph
 import random
 import sys, time
-#import RealTime
-#import poweroff
+import RealTime
+import poweroff
+import threading
+from bluepy import btle
+from PyQt4.QtCore import QObject,pyqtSignal
+
 Ui_MainWindow, QMainWindow = loadUiType('GP.ui')
+
+class XStream(QObject):
+    _stdout = None
+    _stderr = None
+
+    messageWritten = pyqtSignal(str)
+
+    def flush( self ):
+        pass
+
+    def fileno( self ):
+        return -1
+
+    def write( self, msg ):
+        if ( not self.signalsBlocked() ):
+            self.messageWritten.emit(unicode(msg))
+
+    @staticmethod
+    def stdout():
+        if ( not XStream._stdout ):
+            XStream._stdout = XStream()
+            sys.stdout = XStream._stdout
+        return XStream._stdout
+
+    @staticmethod
+    def stderr():
+        if ( not XStream._stderr ):
+            XStream._stderr = XStream()
+            sys.stderr = XStream._stderr
+        return XStream._stderr
 
 class Main(QMainWindow, Ui_MainWindow):
 
@@ -24,36 +58,45 @@ class Main(QMainWindow, Ui_MainWindow):
         #pyqtgraph.setConfigOption('background', 'w')  # before loading widget
         super(Main, self).__init__()
         self.setupUi(self)
-        #self.Real = RealTime.RealTime()
-        #self.Poweroff=poweroff.poweroff
+        self.Real = RealTime.RealTime()
+                
+        #self.Real.set_GP_instance(self)
+        self.Power=poweroff.poweroff()
+        
+        #self.textBrowser.setText( "stdouterr" )
+        #self.textBrowser.insertPlainText("yA Rab \n")
+        
+        XStream.stdout().messageWritten.connect( self.textBrowser.insertPlainText )
+        XStream.stdout().messageWritten.connect( self.textBrowser.ensureCursorVisible )
+        XStream.stderr().messageWritten.connect( self.textBrowser.insertPlainText )
+        XStream.stderr().messageWritten.connect( self.textBrowser.ensureCursorVisible )
+        
         #self.emgplot = pg.PlotWidget( name='EMGplot' )
         self.emgplot.setRange( QtCore.QRectF( -50, -200, 1000, 1400 ) )
         self.emgplot.disableAutoRange()
         self.emgplot.setTitle( "EMG" )
 
-        self.textBrowser.setText( "stdouterr" )
-        self.textBrowser.insertPlainText("yA Rab \n")
-
-
         self.refreshRate = 0.05
-
         self.emgcurve = []
         for i in range( 8 ):
             c = self.emgplot.plot( pen=(i, 10) )
             c.setPos( 0, i * 150 )
             self.emgcurve.append( c )
 
-
         self.lastUpdateTime = time.time()
-        self.show()
-
-        self.pushButton_5.clicked.connect( self.clear )
-        #self.pushButton.clicked.connect( self.Real.start_MYO())
-        #self.pushButton.clicked.connect( self.Poweroff.power_off())
-        #self.pushButton_2.clicked.connect( self.Real.thread_new() )
-        #self.pushButton.clicked.connect(self.browse_wav)
-        #self.pushButton.clicked.connect(self.file_save_txt)
-
+        #self.show()
+        
+        self.pushButton.clicked.connect(self.Real.start_MYO)        
+        self.pushButton_2.clicked.connect( self.start_thread1)
+        self.pushButton_3.clicked.connect( self.stop_thread1)
+        self.pushButton_4.clicked.connect( self.disconnect_MYO)
+        self.pushButton_5.clicked.connect(self.Power.power_off)
+        self.pushButton_6.clicked.connect( self.clear_textBrowser )
+        self.pushButton_7.clicked.connect( self.start_thread2 )
+        self.pushButton_8.clicked.connect( self.stop_thread2 )
+        self.pushButton_9.clicked.connect(self.file_save_csv)
+        self.pushButton_10.clicked.connect(self.browse_pickle)
+        #self.pushButton_4.setStyleSheet("background-color: red")
 
         palette = QtGui.QPalette()
         palette.setColor(QtGui.QPalette.Foreground, QtCore.Qt.red)
@@ -64,9 +107,66 @@ class Main(QMainWindow, Ui_MainWindow):
         self.EMG3.plotItem.showGrid(True, True, 0.7)
         self.EMG4.plotItem.showGrid(True, True, 0.7)
         #self.grFFT.plotItem.setRange(yRange=[0, 1])
-
-    def clear(self):
+        self.thread1 = None
+        self.thread2 = None
+        self.event_stop_thread1 = threading.Event()
+        self.event_stop_thread2 = threading.Event()
+        
+    def start_thread1(self):
+        self.Real.Flag_predict= True
+        self.Real.b = np.empty( [0, 8] )
+        self.event_stop_thread1.clear()
+        self.thread1 = threading.Thread(target = self.loop1)
+        self.thread1.start()
+        
+    def start_thread2(self):
+        self.Real.b = np.empty( [0, 8] )
+        self.Real.Flag_Graph = True
+        self.event_stop_thread2.clear()
+        self.thread2 = threading.Thread(target = self.loop2)
+        self.thread2.start()
+        
+    def loop1(self):
+        while not self.event_stop_thread1.is_set():
+        #if not self.stop_threads.is_set():
+            if self.Real.myo_device.services.waitForNotifications( 1 ):
+                print(self.Real.predictions_array)
+                if len(self.Real.predictions_array) % 5 ==0 :
+                    self.Real.predictions_array.pop(0)
+            else:
+                print("Waiting...")
+        
+    def loop2(self):
+        while not self.event_stop_thread2.is_set():
+            self.update_plots()
+            if self.Real.myo_device.services.waitForNotifications( 1 ):
+                continue
+                
+  
+    def stop_thread1(self):
+        self.event_stop_thread1.set()
+        self.thread1.join()
+        self.thread1 = None
+        self.Real.b = np.empty( [0, 8] )
+        self.Real.Flag_Graph =False
+    def stop_thread2(self):
+        self.event_stop_thread2.set()
+        self.thread2.join()
+        self.thread2 = None
+        self.Real.b = np.empty( [0, 8] )
+        self.Real.Flag_predict= False
+        
+    def clear_textBrowser(self):          
         self.textBrowser.clear()
+        
+    def disconnect_MYO(self):
+        print ("attempting to Disconnect")
+        self.Real.myo_device.services.vibrate( 1 )  # short vibration
+        #btle.Peripheral.disconnect()
+        self.Real.myo_device.services.disconnect_MYO()
+        print ("Successfully Disconnected")
+     
+       
 
     def plotter(self):
 
@@ -75,9 +175,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updater)
         self.timer.start(0)
-
-
-
 
 
     def updater(self):
@@ -106,42 +203,31 @@ class Main(QMainWindow, Ui_MainWindow):
             self.grPhase_2.plot(fftx, phase, pen=pen2, clear=True)
             self.data = [0]
 
-
-
-
-
-        #self.login_widget_1 = LoginWidget(self)
-        #self.verticalLayout_3.addWidget(self.login_widget_1)
-
-
-
-        #self.pushButton_4.clicked.connect(self.browse_wav)
-        #self.pushButton_4.setStyleSheet("background-color: red")
+      
 
     def update_plots(self):
-        ctime = time.time()
-        if (ctime - self.lastUpdateTime) >= self.refreshRate:
-            for i in range( 8 ):
-                self.emgcurve[i].setData( self.listener.emg.data[i, :] )
+        #ctime = time.time()
+        #if (ctime - self.lastUpdateTime) >= self.refreshRate:
+        for i in range( 8 ):
+            self.emgcurve[i].setData( self.Real.b[:,i] )
             #for i in range( 4 ):
                 #self.oricurve[i].setData( self.listener.orientation.data[i, :] )
             #for i in range( 3 ):
                 #self.acccurve[i].setData( self.listener.acc.data[i, :] )
-            self.lastUpdateTime = ctime
-
+            #self.lastUpdateTime = ctime
+            #self.Real.b = np.empty( [0, 8] )
             app.processEvents()
+            
+        if self.Real.b.shape[0] % 5 ==0 :
+            self.Real.b = np.delete(self.Real.b,[0], axis=0)
 
 
 
 
-
-
-
-
-    def browse_wav(self):
+    def browse_pickle(self):
         self.flag1=1
 
-        filepath = QtGui.QFileDialog.getOpenFileName(self, 'Single File', "C:\Users\Hanna Nabil\Desktop",'*.wav')
+        filepath = QtGui.QFileDialog.getOpenFileName(self, 'Single File', "",'*.pickle')
         f= str(filepath)
         if f != "":
             spf = wave.open(f, 'r')
@@ -155,23 +241,22 @@ class Main(QMainWindow, Ui_MainWindow):
 
 
 
-    def file_save_txt(self):
-        from math import sin, pi
-        b=0
-        x = [0] * 38000
+    def file_save_csv(self):
+      
 
-        for i in range(38000):
-            x[i] = sin(2 * pi * 10000 * i / 38000) + sin(2 * pi * 500 * i / 38000)
-        name = QtGui.QFileDialog.getSaveFileName(self, 'Save Point', "C:\Users\Hanna Nabil\Desktop", '*.txt')
-        file = open(name, "w")
+        path = QtGui.QFileDialog.getSaveFileName(self, 'Save Point', "", '*.csv')
+        print (" Path is ")
+        print (path)
+        self.Real.b= np.empty([0,8])
+        while  self.Real.b.shape[0] < int(self.lineEdit.text()):
+            if self.Real.myo_device.services.waitForNotifications(1):
+                continue
+            
+         
+        np.savetxt(str(path)+".csv", self.Real.b, delimiter="," ,fmt='%10.5f')
+        self.Real.b= np.empty([0,8])
 
-        #for i in range(0, self.signal.size):
-            #file.write(str(self.signal[i]) + "\n")
-        for i in range(0,len(x)):
-            b ='{:.6f}'.format(x[i])
-            file.write(str(b) + "\n")
-
-        file.close()
+        #file.close()
 
 
 

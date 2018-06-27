@@ -15,7 +15,10 @@ class Services(btle.Peripheral):
         hex_fw = self.readCharacteristic(ReadHandle.FIRMWARE)
         fw = struct.unpack('<4h', hex_fw)
         return fw
-
+    
+    def disconnect_MYO(self):
+        self.disconnect()
+        
     # Get the battery level
     def battery(self):
         hex_batt = self.readCharacteristic(ReadHandle.BATTERY)
@@ -119,6 +122,7 @@ class Device(btle.DefaultDelegate):
             self.on_battery(batt)
         else:
             print('Data with unknown attr: %02X' % cHandle)
+            
 
     def add_emg_event_handler(self, event_handler):
         self.emg_event_handlers.append(event_handler)
