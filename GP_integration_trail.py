@@ -75,47 +75,46 @@ import threading
 import RealTime
 import poweroff
 #EMG ############################################################################################################
-## All you have to do is to call start_thread to start threading smoothly
-self.Real = RealTime.RealTime()
+## All you have to do is to Real.start_MYO() then call start_thread1 to start threading smoothly
+Real = RealTime.RealTime()
 
 # self.Real.set_GP_instance(self)
-self.Power = poweroff.poweroff()
-self.thread1 = None
-self.thread2 = None
-self.event_stop_thread1 = threading.Event()
-self.event_stop_thread2 = threading.Event()
+Power = poweroff.poweroff()
+thread1 = None
+thread2 = None
+event_stop_thread1 = threading.Event()
+event_stop_thread2 = threading.Event()
 
 
-def start_thread1(self):
-    self.Real.Flag_predict = True
-    self.Real.b = np.empty( [0, 8] )
-    self.event_stop_thread1.clear()
-    self.thread1 = threading.Thread( target=self.loop1 )
-    self.thread1.start()
+def start_thread1():
+    Real.Flag_predict = True
+    Real.b = np.empty( [0, 8] )
+    event_stop_thread1.clear()
+    thread1 = threading.Thread( target=loop1 )
+    thread1.start()
 
 
 
-def loop1(self):
-    while not self.event_stop_thread1.is_set():
+def loop1():
+    while not event_stop_thread1.is_set():
         # if not self.stop_threads.is_set():
-        if self.Real.myo_device.services.waitForNotifications( 1 ):
-            print(self.Real.predictions_array)
-            if len( self.Real.predictions_array ) % 5 == 0:
-                self.Real.predictions_array.pop( 0 )
+        if Real.myo_device.services.waitForNotifications( 1 ):
+            print(Real.predictions_array)
         else:
             print("Waiting...")
 
 
 
-def stop_thread1(self):
-    self.event_stop_thread1.set()
-    self.thread1.join()
-    self.thread1 = None
-    self.Real.b = np.empty( [0, 8] )
-    self.Real.Flag_Predict = False
+def stop_thread1():
+    event_stop_thread1.set()
+    thread1.join()
+    thread1 = None
+    Real.b = np.empty( [0, 8] )
+    Real.Flag_Predict = False
 
 
-
+#Real.start_MYO()
+#start_thread1()
 ###########################################################################################################3
 
 # In[ ]:
