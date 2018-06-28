@@ -7,7 +7,6 @@ import matplotlib.backends.backend_qt4agg
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,NavigationToolbar2QT as NavigationToolbar)
 from PyQt4.QtGui import *
-import serial  # import Serial Library
 #from drawnow import *
 import pyqtgraph as pg
 import pyqtgraph
@@ -16,7 +15,6 @@ import sys, time
 import RealTime
 import poweroff
 import threading
-from bluepy import btle
 from PyQt4.QtCore import QObject,pyqtSignal
 
 Ui_MainWindow, QMainWindow = loadUiType('GP.ui')
@@ -148,13 +146,13 @@ class Main(QMainWindow, Ui_MainWindow):
         self.thread1.join()
         self.thread1 = None
         self.Real.b = np.empty( [0, 8] )
-        self.Real.Flag_Graph =False
+        self.Real.Flag_Predict =False
     def stop_thread2(self):
         self.event_stop_thread2.set()
         self.thread2.join()
         self.thread2 = None
         self.Real.b = np.empty( [0, 8] )
-        self.Real.Flag_predict= False
+        self.Real.Flag_Graph= False
         
     def clear_textBrowser(self):          
         self.textBrowser.clear()
