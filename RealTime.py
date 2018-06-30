@@ -26,7 +26,6 @@ class RealTime():
         self.b = np.empty( [0, 8] )
         self.predictions_array = []
         self.emg_total = np.empty( [0, 8] )
-        self.iteration = 0
         self.Flag_Graph=None
         self.Flag_Predict =None
         #self.set_GP_instance(GP)
@@ -114,8 +113,7 @@ class RealTime():
         data= pd.DataFrame(self.emg_total)
         filtered_emg=self.filteration (data,sample_rate=200)
         predictors_test = self.get_predictors(filtered_emg)
-        self.emg_total = self.emg_total[(self.iteration*tau):]
-        self.iteration = self.iteration + 1
+        self.emg_total = self.emg_total[128:]
         self.b= np.empty([0,8])
         filename = 'EMG_hannaa_model.pickle'
         pickled_clf=joblib.load(filename)
