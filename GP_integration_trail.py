@@ -368,7 +368,7 @@ def Main_algorithm ():
             print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
             print ('Actuate - \n')
         else:
-            print ('Doesn't make  \n')
+            print ("Doesn't make  \n")
 
 
 def Camera():
