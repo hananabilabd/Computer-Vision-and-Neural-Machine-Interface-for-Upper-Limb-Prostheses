@@ -12,8 +12,8 @@ import pyqtgraph as pg
 import pyqtgraph
 import random
 import sys, time
-import RealTime
-import poweroff
+#import RealTime
+#import poweroff
 import threading
 from PyQt4.QtCore import QObject,pyqtSignal
 
@@ -56,10 +56,10 @@ class Main(QMainWindow, Ui_MainWindow):
         #pyqtgraph.setConfigOption('background', 'w')  # before loading widget
         super(Main, self).__init__()
         self.setupUi(self)
-        self.Real = RealTime.RealTime()
+        #self.Real = RealTime.RealTime()
                 
         #self.Real.set_GP_instance(self)
-        self.Power=poweroff.poweroff()
+        #self.Power=poweroff.poweroff()
         
         #self.textBrowser.setText( "stdouterr" )
         #self.textBrowser.insertPlainText("yA Rab \n")
@@ -83,7 +83,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
         self.lastUpdateTime = time.time()
         #self.show()
-        
+        """
         self.pushButton.clicked.connect(self.Real.start_MYO)        
         self.pushButton_2.clicked.connect( self.start_thread1)
         self.pushButton_3.clicked.connect( self.stop_thread1)
@@ -95,7 +95,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.pushButton_9.clicked.connect(self.file_save_csv)
         self.pushButton_10.clicked.connect(self.browse_pickle)
         #self.pushButton_4.setStyleSheet("background-color: red")
-
+        """
         palette = QtGui.QPalette()
         palette.setColor(QtGui.QPalette.Foreground, QtCore.Qt.red)
         self.label.setPalette(palette)

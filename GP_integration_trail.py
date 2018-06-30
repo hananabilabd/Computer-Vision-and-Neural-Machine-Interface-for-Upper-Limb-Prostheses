@@ -170,7 +170,7 @@ def Nazarpour_model(input_shape,num_of_layers=2):
   return model
 
 
-def grasp_type(path_of_test_real,model_name):
+def grasp_type(frame,model_name):
     """
     path_of_test_real : the path of the uploaded image in case of offline.
     model_name: the name of the trained model, 'tmp.h5'
@@ -184,8 +184,8 @@ def grasp_type(path_of_test_real,model_name):
     model.compile('adam',loss='categorical_crossentropy',metrics=['accuracy'])
     model.load_weights(model_name)
     
-    i=misc.imread(path_of_test_real)
-    img_after_preprocess=real_preprocess(i)
+#    i=misc.imread(path_of_test_real)
+    img_after_preprocess=real_preprocess(frame)
     x = np.expand_dims(img_after_preprocess, axis=0)
     x=x.reshape((1,n_row,n_col,nc))
     out=model.predict(x)
@@ -311,7 +311,7 @@ Stages meanings:
 
 def Main_algorithm ():
 #    event.wait()
-    stage=80 #I changed it to random number not zero just for test. retrun it back!!
+    stage=0 #I changed it to random number not zero just for test. retrun it back!!
     corrections= 0
     all_grasps = [1, 2, 3, 4]
     Choose_grasp = list(all_grasps)
@@ -321,17 +321,17 @@ def Main_algorithm ():
     
     while (True):#not(q.empty())):  
         EMG_class_recieved = q.get()        
-        if (EMG_class_recieved == 111111 or stage == 0):
-            grasp = grasp_type(path_of_real_test,CV_model_name)
+        if (EMG_class_recieved == 1 or stage == 0):
+            grasp = Camera()
             Choose_grasp = list(all_grasps)
             print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
             print("    Taking photos and deciding grasp type \n")
             print ('Grasp type no.{0} \n'.format(grasp))
             stage = 1
-        elif (EMG_class_recieved == 1):
+        elif (EMG_class_recieved == 2):
             print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
             print("    Confirmed! \n")
-            if stage < 3:
+            if stage < 2:
                 stage+=1
                 corrections = 0
                 Choose_grasp = list(all_grasps)
@@ -355,7 +355,7 @@ def Main_algorithm ():
             else:
                 print ('No previous stage, restarting ... \n')
                 stage =0
-                grasp = grasp_type(path_of_real_test,model_name)
+                grasp = Camera()
                 Choose_grasp = list(all_grasps)
                 print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
                 print("    Taking photos and deciding grasp type \n")
@@ -363,20 +363,39 @@ def Main_algorithm ():
                 stage = 1
         elif (EMG_class_recieved == 4):
             print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
-            if stage == 1:
-                print ('Bigger size \n')
-            elif stage == 2:
-                print ('less force \n')
-            else:
-                print ("Doesn't make sense \n")
+            print ('Actuate + \n')
         elif (EMG_class_recieved == 5):
             print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
-            if stage == 1:
-                print ('Smaller size \n')
-            elif stage == 2:
-                print ('More force \n')
-            else:
-                print ("Doesn't make sense \n")
+            print ('Actuate - \n')
+        else:
+            print ('Doesn't make  \n')
+
+
+def Camera():
+    grasp_votes [0,0,0]
+    video = cv2.VideoCapture(0)
+    check, frame1 = video.read()
+    grasp_votes[0] = grasp_type(frame1, CV_model_name)
+    time.sleep(0.2)
+
+    video = cv2.VideoCapture(0)
+    check, frame2 = video.read()
+    grasp_votes[0] = grasp_type(frame2, CV_model_name)
+    time.sleep(0.2)
+
+    video = cv2.VideoCapture(0)
+    check, frame2 = video.read()
+    grasp_votes[0] = grasp_type(frame2, CV_model_name)
+
+    video.release()
+
+    grasp =  Most_Common(grasp_votes)
+    return grasp
+
+def Most_Common(lst):
+    data = Counter(lst)
+    return data.most_common(1)[0][0]
+
 
 
 # In[10]:

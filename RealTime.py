@@ -11,12 +11,11 @@ from scipy import stats
 from sklearn.linear_model import SGDClassifier
 from sklearn.externals import joblib
 import sys
-import test
 import time
 #from test import MyoRaw
 import open_myo as myo
 import threading
-import GP
+#import GP
 class RealTime():
 
     def __init__(self, parent=None):

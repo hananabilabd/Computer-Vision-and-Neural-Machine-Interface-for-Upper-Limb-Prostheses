@@ -22,7 +22,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="movable">
            <bool>true</bool>
@@ -37,10 +37,10 @@
            <widget class="QFrame" name="frame_5">
             <property name="geometry">
              <rect>
-              <x>20</x>
-              <y>20</y>
-              <width>1061</width>
-              <height>351</height>
+              <x>0</x>
+              <y>-10</y>
+              <width>941</width>
+              <height>391</height>
              </rect>
             </property>
             <property name="frameShape">
@@ -192,6 +192,32 @@
              </item>
             </layout>
            </widget>
+           <widget class="QPushButton" name="pushButton_11">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>390</y>
+              <width>75</width>
+              <height>23</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Start Plot</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_12">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>390</y>
+              <width>75</width>
+              <height>23</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Stop Plot</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QWidget" name="tab_2">
            <attribute name="title">
@@ -200,9 +226,9 @@
            <widget class="PlotWidget" name="emgplot">
             <property name="geometry">
              <rect>
-              <x>30</x>
+              <x>10</x>
               <y>10</y>
-              <width>791</width>
+              <width>811</width>
               <height>421</height>
              </rect>
             </property>
@@ -295,6 +321,32 @@
            <attribute name="title">
             <string>Testing</string>
            </attribute>
+           <widget class="QPushButton" name="pushButton_2">
+            <property name="geometry">
+             <rect>
+              <x>580</x>
+              <y>180</y>
+              <width>191</width>
+              <height>23</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Start Prediction</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_3">
+            <property name="geometry">
+             <rect>
+              <x>580</x>
+              <y>230</y>
+              <width>191</width>
+              <height>23</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Stop Prediction</string>
+            </property>
+           </widget>
           </widget>
          </widget>
         </item>
@@ -323,20 +375,6 @@
           <widget class="QPushButton" name="pushButton">
            <property name="text">
             <string>Connect MYO</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="text">
-            <string>Start Prediction</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_3">
-           <property name="text">
-            <string>Stop Prediction</string>
            </property>
           </widget>
          </item>
@@ -374,7 +412,7 @@
      <x>0</x>
      <y>0</y>
      <width>1220</width>
-     <height>27</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
