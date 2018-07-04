@@ -235,7 +235,7 @@ def predict(emg,tau=128):
     emg_total = emg_total[(iteration*tau):]
     iteration = iteration + 1
     b= np.empty([0,8])
-    filename = 'EMG_hannaa_model.pickle'
+    filename = 'EMG_hanna_model.pickle'
     pickled_clf=joblib.load(filename)
     return pickled_clf.predict(predictors_test)
 
@@ -246,6 +246,7 @@ def predict(emg,tau=128):
 
 
 b= np.empty([0,8])
+p = np.empty([0])
 predictions_array = []
 ###This the function you will receive your EMG data in ==> You can then thread it to do something else 
 def final (emg):
@@ -262,11 +263,16 @@ def process_emg(emg):
 	
     #print(emg)
     global b
+    global p
     ## for RAW_EMG 
     b = np.append(b,emg,axis =0)
     if b.shape[0]==512:
         #final(b)
-        predictions_array.append(predict(b))
+        p = np.append(p,predict(b), axis=0)
+        #c=predict(b)
+        #print (c)
+        #print (predict(b))
+        #predictions_array.append(predict(b))
     
     ## For Filtered_EMG
     #b= np.append(b,[[emg[0],emg[1],emg[2],emg[3],emg[4],emg[5],emg[6],emg[7]]],0)
@@ -313,7 +319,7 @@ myo_device.add_emg_event_handler(process_emg)
 
 while True:
     if myo_device.services.waitForNotifications(1):
-		print(predictions_array)
+		print(p)
 		continue
 	
         

@@ -158,7 +158,7 @@ class RealTime():
         self.b = np.empty( [0, 8] )
 
     def process_emg(self,emg):
-        # unfortunately the Filtered Array provide 1 array of 8 element at a time  ==> in te Form of Tuple
+        # unfortunately the Filtered Array provide 1 array of 8 element at a time  ==> in the Form of Tuple
         # while The RAW_EMG provide 2 array at a time 8 elements each , ===> in the form of list that contains 2 tuples
 
         # print(emg)
@@ -200,30 +200,7 @@ class RealTime():
 
 
 
-    def start_thread(self):
-        self.stop_threads.clear()
-        self.thread1 = threading.Thread( target=self.loop1 )
-        self.thread1.start()
 
-    def loop1(self):
-     
-        while not self.stop_threads.is_set():
-        #if not self.stop_threads.is_set():
-            if self.myo_device.services.waitForNotifications( 1 ):
-                print(self.predictions_array)
-            else:
-                print("Waiting...")
-         
-
-
-
-
-
-    def stop(self):
-        self.stop_threads.set()
-        self.thread1.join()
-
-        self.thread1 = None
 
 
 
