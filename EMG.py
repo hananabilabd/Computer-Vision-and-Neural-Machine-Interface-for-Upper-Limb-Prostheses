@@ -26,7 +26,6 @@ class Listener(myo.DeviceListener):
     self.predictions_array = []
     self.prediction_array = np.empty( [0] )
     self.emg_total = np.empty( [0, 8] )
-    self.iteration =0
     self.flag_Graph1 = None
     self.flag_Predict = None
     # self.set_GP_instance(GP)
@@ -126,8 +125,7 @@ class Listener(myo.DeviceListener):
     data = pd.DataFrame( self.emg_total )
     filtered_emg = self.filteration( data, sample_rate=200 )
     predictors_test = self.get_predictors( filtered_emg )
-    self.emg_total = self.emg_total[(self.iteration * tau):]
-    self.iteration = self.iteration + 1
+    self.emg_total = self.emg_total[128:]
     self.EMG = np.empty( [0, 8] )
     filename = 'EMG_hanna_model.pickle'
     pickled_clf = joblib.load( filename )
