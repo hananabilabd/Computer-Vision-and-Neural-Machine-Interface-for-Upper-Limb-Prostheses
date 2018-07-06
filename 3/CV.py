@@ -151,19 +151,19 @@ class CV():
         while not(self.q.empty()):  # not(q.empty())):
             EMG_class_recieved = self.q.get()
             if (EMG_class_recieved == 0 or self.stage == 0):
-                print("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage ))
+                print(("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage )))
                 self.System_power( 1 )  # Start system
 
             elif (EMG_class_recieved == 1):
-                print("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage ))
+                print(("EMG_class {0}, stage {1} : \n".format( EMG_class_recieved, stage )))
                 self.Confirmation()
 
             elif (EMG_class_recieved == 2):
-                print("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage ))
+                print(("EMG_class {0}, stage {1} : \n".format( EMG_class_recieved, self.stage )))
                 self.Cancellation()
 
             elif (EMG_class_recieved == 3):
-                print("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage ))
+                print(("EMG_class {0}, stage {1} : \n".format( EMG_class_recieved, self.stage )))
                 self.System_power( 0 )  # Turn system off
 
     def System_power(self,Turn_on):
@@ -179,7 +179,7 @@ class CV():
             # Restart
             print ("Restarting ... \n")
             grasp = grasp_type( self.path_of_real_test, self.model_name )
-            print ('Grasp type no.{0} \n'.format( grasp ))
+            print(('Grasp type no.{0} \n'.format( grasp )))
             self.stage = 1
 
     def Confirmation(self):
@@ -206,7 +206,7 @@ class CV():
                 corrections += 1
                 # Redo previous action
         else:
-            print ('No previous stage, restarting ... \n')
+            print ('No previous self.stage, restarting ... \n')
             System_power( 1 )
 
 

@@ -19,8 +19,8 @@ import EMG
 #import CV
 import EMG_Model
 import collections
-import Queue as queue ##If python 2
-#import queue  ##If python 3
+#import Queue as queue ##If python 2
+import queue  ##If python 3
 import pandas as pd
 Ui_MainWindow, QMainWindow = loadUiType('GP.ui')
 
