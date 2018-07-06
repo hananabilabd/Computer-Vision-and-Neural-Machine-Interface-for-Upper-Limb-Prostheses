@@ -73,5 +73,5 @@ def all_steps(movements,file_name):
     print accuracy(model)
 
     #save pickle
-    save_model(model,file_name
+    save_model(model,file_name)
 
