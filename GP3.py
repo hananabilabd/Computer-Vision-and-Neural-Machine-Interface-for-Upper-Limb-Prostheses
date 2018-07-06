@@ -1,10 +1,10 @@
 import numpy as np
 from matplotlib.pyplot import axvline, axhline
 import matplotlib.pyplot as plt
-from PyQt4.uic import loadUiType
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import *
-from PyQt4.QtCore import QObject,pyqtSignal
+from PyQt5.uic import loadUiType
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtGui import *
+from PyQt5.QtCore import QObject,pyqtSignal
 import matplotlib.backends.backend_qt4agg
 from matplotlib.figure import Figure
 #from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,NavigationToolbar2QT as NavigationToolbar)
@@ -16,11 +16,11 @@ import random
 import sys, time
 import threading
 import EMG
-#import CV
+import CV
 import EMG_Model
 import collections
-import Queue as queue ##If python 2
-#import queue  ##If python 3
+#import Queue as queue ##If python 2
+import queue  ##If python 3
 import pandas as pd
 Ui_MainWindow, QMainWindow = loadUiType('GP.ui')
 
@@ -341,7 +341,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
 if __name__ == '__main__':
     import sys
-    from PyQt4 import QtGui
+    from PyQt5 import QtGui
     import numpy as np
 
     app = QtGui.QApplication(sys.argv)

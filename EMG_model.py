@@ -190,6 +190,7 @@ class EMG_Model():
 
         #save pickle
         self.save_model(model,file_name)
+
 if __name__ == '__main__':
     e=EMG_Model()
     e.all_steps(path1="0.csv",path2="1.csv",path3="2.csv",path4="3.csv",file_name="Hannon.pickle")
