@@ -67,12 +67,12 @@ class EMG_Model():
     def all_steps(self,movements,file_name):
         from sklearn.externals import joblib
 
-        predictors_train,outcomes_train,predictors_test,outcomes_test = prepare_data(movements)
-        model = svm_model(predictors_train,outcomes_train)
+        predictors_train,outcomes_train,predictors_test,outcomes_test = self.prepare_data(movements)
+        model = self.svm_model(predictors_train,outcomes_train)
 
         #if you wanna accuracy
-        print accuracy(model)
+        print (self.accuracy(model))
 
         #save pickle
-        save_model(model,file_name)
+        self.save_model(model,file_name)
 
