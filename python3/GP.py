@@ -317,10 +317,10 @@ class Main(QMainWindow, Ui_MainWindow):
         if not self.path5 ==None and not self.path6 ==None :
             filepath = QtGui.QFileDialog.getSaveFileName( self, 'Save Point', "", '*.csv' )
 
-            a=pd.read_csv(  str( self.path5 ) ,  header=None )
-            b = pd.read_csv( str( self.path6 ) , header=None )
+            a=pd.read_csv(  str( self.path5 ) , header=None ,index_col =False )
+            b = pd.read_csv( str( self.path6 ) , header=None ,index_col =False )
             c = pd.concat( [a, b] )
-            c.to_csv( str(filepath) )
+            c.to_csv( str(filepath),index=False, header=None )
             print((" Saved SuccessFully at = %s" % filepath))
     def browsePickleEMGModel1(self):
         filepath = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.pickle' )
