@@ -1,11 +1,11 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[86]:
 
 
-#PROBLEMS:
-  #1-EMG: fail to predict the right class
+#PROBLEMS: 
+#  1-EMG: fail to predict the right class
   #2-Error in the CV
   #https://github.com/keras-team/keras/wiki/Converting-convolution-kernels-from-Theano-to-TensorFlow-and-vice-versa
   #https://stackoverflow.com/questions/49287934/dask-dataframe-prediction-of-keras-model/49290185?noredirect=1#comment85587469_49290185
@@ -13,12 +13,15 @@
  #create new h5 in backend Theano
 
 
-# In[1]:
+# In[87]:
 
 
-#get_ipython().system(u'pip install -q keras')
+#!pip install -q keras
 import keras
 import h5py
+
+
+# In[88]:
 
 
 import os 
@@ -55,35 +58,33 @@ import keras.backend as K
 K.set_image_data_format('channels_last')
 K.set_learning_phase(1)
 
-
+import threading
 import os 
 import numpy as np
 import cv2
 import time
 from collections import Counter
-#import queue ##If python 3
-import Queue as queue ##If python 2
+import queue ##If python 3
+#import Queue as queue ##If python 2
 import scipy.io as sio
 from scipy.signal import butter,lfilter,filtfilt
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import svm
 from scipy import stats
-import threading
-
-#EMG ############################################################################################################
-## All you have to do is to Real.start_MYO() then call start_thread1 to start threading smoothly
-
-###########################################################################################################3
-
-# In[ ]:
 
 
+
+# In[89]:
+
+
+"""
 def upload_files():
   from google.colab import files
   uploaded = files.upload()
   for k, v in uploaded.items():
     open(k, 'wb').write(v)
   return list(uploaded.keys())
+"""
 
 def rgb2gray(rgb_image):
     return np.dot(rgb_image, [0.299, 0.587, 0.114])
@@ -128,7 +129,7 @@ def Nazarpour_model(input_shape,num_of_layers=2):
   return model
 
 
-def grasp_type(frame,model_name):
+def grasp_type(path_of_test_real,model_name):
     """
     path_of_test_real : the path of the uploaded image in case of offline.
     model_name: the name of the trained model, 'tmp.h5'
@@ -142,8 +143,8 @@ def grasp_type(frame,model_name):
     model.compile('adam',loss='categorical_crossentropy',metrics=['accuracy'])
     model.load_weights(model_name)
     
-#    i=misc.imread(path_of_test_real)
-    img_after_preprocess=real_preprocess(frame)
+    i=misc.imread(path_of_test_real)
+    img_after_preprocess=real_preprocess(i)
     x = np.expand_dims(img_after_preprocess, axis=0)
     x=x.reshape((1,n_row,n_col,nc))
     out=model.predict(x)
@@ -152,12 +153,12 @@ def grasp_type(frame,model_name):
     return grasp
 
 
-# In[ ]:
+# In[90]:
 
 
 def read_offline_for_prediction(path):
     df=pd.read_csv(path)
-    df=df.iloc[:,1:]
+    df=df.iloc[:,1:] #might need to change
     return df
 
 def filteration (data,sample_rate=2000.0,cut_off=20.0,order=5,ftype='highpass'): 
@@ -234,7 +235,10 @@ def EMG_movement_type(path,model_name,width=512,tau=128,sample_rate=200):
     #predictors_array_2d = np.nan_to_num(predictors_array)
     
     #prediction part, pickle
-    clf=joblib.load(model_name)
+    with open (model_name, 'rb') as f:
+        clf = pickle.load (f, encoding = 'latin1')
+        
+#    clf=joblib.load(model_name)
     predicted_movements=clf.predict(predictors_array_2d)
     
     mode,count=stats.mode(predicted_movements)
@@ -242,7 +246,7 @@ def EMG_movement_type(path,model_name,width=512,tau=128,sample_rate=200):
     return int(mode)
 
 
-# In[ ]:
+# In[91]:
 
 
 q= queue.Queue()
@@ -251,8 +255,8 @@ q= queue.Queue()
 def EMG_Listener():
     #while (True):
       
-      path= "1.csv" #put the path of the EMG signal
-      EMG_model_name="EMG_wafa_model.pickle" #put the name of model i.e. 'example.pickle'
+      path= "tools/5_3.csv" #put the path of the EMG signal
+      EMG_model_name="EMG_hanna.pickle" #put the name of model i.e. 'example.pickle'
 
       EMG_class=EMG_movement_type(path,EMG_model_name)
       q.put(EMG_class)
@@ -261,6 +265,7 @@ def EMG_Listener():
 
 """
 Stages meanings:
+0: System off
 1: Taking photos, deciding grasp type, preshaping.
 2: Grasping
 3: Releasing
@@ -274,95 +279,86 @@ def Main_algorithm ():
     all_grasps = [1, 2, 3, 4]
     Choose_grasp = list(all_grasps)
     
-    path_of_real_test='20180501_143824.jpg' #put the path of the tested picture 
-    CV_model_name='GP_Weights.h5'
+    path_of_real_test='tools/class 1/50_r110.png' #put the path of the tested picture
+    CV_model_name='tools/GP_Weights.h5'
     
     while (True):#not(q.empty())):  
         EMG_class_recieved = q.get()        
-        if (EMG_class_recieved == 1 or stage == 0):
-            grasp = Camera()
-            Choose_grasp = list(all_grasps)
+        if (EMG_class_recieved == 0 or stage == 0):
             print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
-            print("    Taking photos and deciding grasp type \n")
-            print ('Grasp type no.{0} \n'.format(grasp))
-            stage = 1
+            System_power(1) #Start system
+            
+        elif (EMG_class_recieved == 1):
+            print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
+            Confirmation()
+                
         elif (EMG_class_recieved == 2):
             print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
-            print("    Confirmed! \n")
-            if stage < 2:
-                stage+=1
-                corrections = 0
-                Choose_grasp = list(all_grasps)
-                print ('Grasping \n')
-                #Do the action
-            elif stage ==2:
-                print ('Releasing ... \n     Done till next signal!')
-                stage = 0
+            Cancellation()
+                
         elif (EMG_class_recieved == 3):
             print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
-            if stage > 0:
-                if (stage == 2 and corrections > 3):
-                    print("Exceeded maximum iteration: \n Choosing from remaining grasps")
-                    Choose_grasp.remove(grasp)
-                    #Choose random class
-                else:
-                    print("    Cancelled! \n")
-                    stage-=1
-                    corrections +=1
-                    #Redo previous action
-            else:
-                print ('No previous stage, restarting ... \n')
-                stage =0
-                grasp = Camera()
-                Choose_grasp = list(all_grasps)
-                print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
-                print("    Taking photos and deciding grasp type \n")
-                print ('Grasp type no.{0} \n'.format(grasp))
-                stage = 1
-        elif (EMG_class_recieved == 4):
-            print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
-            print ('Actuate + \n')
-        elif (EMG_class_recieved == 5):
-            print("EMG_class {0}, Stage {1} : \n".format(EMG_class_recieved, stage))
-            print ('Actuate - \n')
+            System_power(0) #Turn system off
+            
+            
+            
+            
+                
+def System_power(Turn_on):
+    #Reset values:
+    stage=0
+    corrections= 0
+    Choose_grasp = list(all_grasps)
+    
+    if not Turn_on:
+        #Turn off
+        print ("Turning off ... \n\n\n")
+    else:
+        #Restart
+        print ("Restarting ... \n")
+        grasp = grasp_type(path_of_real_test,model_name)
+        print ('Grasp type no.{0} \n'.format(grasp))
+        stage = 1
+        
+        
+def Confirmation():
+    print("    Confirmed! \n")
+    if stage < 3:
+        stage+=1
+        corrections = 0
+        Choose_grasp = list(all_grasps)
+        print ('Grasping \n')
+        #Do the action
+    elif stage ==2:
+        print ('Releasing ... \n')
+        System_power(0)
+        
+            
+def Cancellation():
+    if stage > 0:
+        if (stage == 2 and corrections > 3):
+            print("Exceeded maximum iteration: \n Choosing from remaining grasps")
+            Choose_grasp.remove(grasp)
+            #Choose random class
         else:
-            print ("Doesn't make  \n")
+            print("    Cancelled! \n")
+            stage-=1
+            corrections +=1
+            #Redo previous action
+    else:
+        print ('No previous stage, restarting ... \n')
+        System_power(1) 
+    
+        
 
 
-def Camera():
-    grasp_votes [0,0,0]
-    video = cv2.VideoCapture(0)
-    check, frame1 = video.read()
-    grasp_votes[0] = grasp_type(frame1, CV_model_name)
-    time.sleep(0.2)
-
-    video = cv2.VideoCapture(0)
-    check, frame2 = video.read()
-    grasp_votes[0] = grasp_type(frame2, CV_model_name)
-    time.sleep(0.2)
-
-    video = cv2.VideoCapture(0)
-    check, frame2 = video.read()
-    grasp_votes[0] = grasp_type(frame2, CV_model_name)
-
-    video.release()
-
-    grasp =  Most_Common(grasp_votes)
-    return grasp
-
-def Most_Common(lst):
-    data = Counter(lst)
-    return data.most_common(1)[0][0]
+# In[92]:
 
 
-
-# In[10]:
-
-
-emg_model=upload_files()
+#emg_model=upload_files()
 
 
-# In[21]:
+# In[93]:
 
 
 #emg_model_s1=upload_files()
@@ -370,69 +366,70 @@ emg_model=upload_files()
 #emg_model_s3=upload_files()
 
 
-# In[7]:
+# In[94]:
 
 
-cv_model=upload_files()
+#cv_model=upload_files()
 
 
-# In[5]:
+# In[95]:
 
 
-tested_pic=upload_files()
+#tested_pic=upload_files()
 
 
-# In[21]:
+# In[96]:
 
 
-tested_signal=upload_files()
+#tested_signal=upload_files()
 
 
-# In[40]:
+# In[97]:
 
 
-t1 = threading.Thread(target = EMG_Listener, name ='thread1')
-t2 = threading.Thread(target = Main_algorithm, name ='thread2')
+#t1 = threading.Thread(target = EMG_Listener, name ='thread1')
+#t2 = threading.Thread(target = Main_algorithm, name ='thread2')
 
 #t1.daemon = True
 #t2.daemon = True
 
-t1.start()
-t2.start()
+#t1.start()
+#t2.start()
 
-t1.join()
+#t1.join()
+grasp = grasp_type('tools/class 1/50_r110.png','tools/GP_Weights.h5')
+print ('Grasp type no.{0} \n'.format(grasp))
 
-
-# In[36]:
-
-
-EMG_movement_type('1.csv','EMG_wafa_model.pickle')
+# In[98]:
 
 
-# In[ ]:
+#EMG_movement_type('1.csv','EMG_wafa_model.pickle')
 
 
-#get_ipython().system(u'pip install -q cython')
-#get_ipython().system(u'pip install -q botocore')
-#get_ipython().system(u'pip install -q tensorflow')
+# In[99]:
 
 
-# In[ ]:
+#!pip install -q cython
+#!pip install -q botocore
+#!pip install -q tensorflow
 
 
-import tensorflow as tf
-global graph
-graph = tf.get_default_graph()
+# In[100]:
 
 
-# In[ ]:
+#import tensorflow as tf
+#global graph
+#graph = tf.get_default_graph()
 
 
-from keras.utils.conv_utils import convert_kernel
+# In[101]:
 
 
-# In[37]:
+#from keras.utils.conv_utils import convert_kernel
 
 
-grasp_type("20180501_143824.jpg","GP_Weights.h5")
+# In[102]:
+
+
+#grasp_type("/__/class 1/50_r110.png","GP_Weights.h5")
 

@@ -27,7 +27,7 @@ class Listener(myo.DeviceListener):
     self.prediction_array = np.empty( [0] )
     self.emg_total = np.empty( [0, 8] )
     self.flag_Graph1 = None
-    self.flag_Predict = None
+    self.flag_Predict = 0
     # self.set_GP_instance(GP)
 
   def set_GP_instance(self, GP):
@@ -117,19 +117,24 @@ class Listener(myo.DeviceListener):
     return np.nan_to_num( predictors_array_2d )
 
 
+  def predict(self , path):
+    if self.emg_total.shape[0] >= 512:
+      self.flag_Predict =1
+      #print ("Hiiii")
+      self.emg_total = np.append( self.emg_total, self.EMG[:128], axis=0 )
+      self.EMG = self.EMG[128:]
+      data = pd.DataFrame( self.emg_total )
+      filtered_emg = self.filteration( data, sample_rate=200 )
+      predictors_test = self.get_predictors( filtered_emg )
+      self.emg_total = self.emg_total[128:]
+      filename = path
+      pickled_clf = joblib.load( filename )
+      return pickled_clf.predict( predictors_test )
+    else :
+      n= self.EMG.shape[0]
+      self.emg_total = np.append( self.emg_total, self.EMG[:n], axis=0 )
+      self.EMG = self.EMG[n:]
 
-
-  def predict(self,emg, tau=128):
-
-    self.emg_total = np.append( self.emg_total, self.EMG, axis=0 )
-    data = pd.DataFrame( self.emg_total )
-    filtered_emg = self.filteration( data, sample_rate=200 )
-    predictors_test = self.get_predictors( filtered_emg )
-    self.emg_total = self.emg_total[128:]
-    self.EMG = np.empty( [0, 8] )
-    filename = 'EMG_hanna_model.pickle'
-    pickled_clf = joblib.load( filename )
-    return pickled_clf.predict( predictors_test )
 
 
 
