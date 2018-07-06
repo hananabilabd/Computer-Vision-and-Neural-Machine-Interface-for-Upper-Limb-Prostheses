@@ -2,16 +2,6 @@ from sklearn.externals import joblib
 
 class EMG_Model():
 
-<<<<<<< HEAD
-    def prepare_data(self,path1 ,path2,path3,path4,intended_movement_labels=[0,1,2,3],rows=8000):
-        emg_set = {}
-
-        emg_set[0] = pd.read_csv( path1, header=None )
-        emg_set[1] = pd.read_csv( path2, header=None )
-        emg_set[2] = pd.read_csv( path3, header=None )
-        emg_set[3] = pd.read_csv( path4, header=None )
-        rows =min (emg_set[0].shape[0],emg_set[1].shape[0],emg_set[2].shape[0],emg_set[3].shape[0])
-=======
     def filteration (self,data,sample_rate=2000.0,cut_off=20.0,order=5,ftype='highpass'): 
         nyq = .5 * sample_rate
         b,a=butter(order,cut_off/nyq,btype=ftype)
@@ -115,8 +105,14 @@ class EMG_Model():
 
         return np.nan_to_num(predictors_array_2d)
 
-    def prepare_data(self,intended_movement_labels,rows=8000):
->>>>>>> f404469efb25fd286c89cfc076201ba5ad87525b
+    def prepare_data(self,intended_movement_labels=[0,1,2,3],rows=8000):
+        emg_set = {}
+
+        emg_set[0] = pd.read_csv( self.path1, header=None )
+        emg_set[1] = pd.read_csv( self.path2, header=None )
+        emg_set[2] = pd.read_csv( self.path3, header=None )
+        emg_set[3] = pd.read_csv( self.path4, header=None )
+        rows = min( emg_set[0].shape[0], emg_set[1].shape[0], emg_set[2].shape[0], emg_set[3].shape[0] )
 
         rep = []
         reps =rows // 6 if rows % 6 == 0 else (rows //6)+1
@@ -178,8 +174,11 @@ class EMG_Model():
 
 
 
-    def all_steps(self,movements,file_name):
-
+    def all_steps(self,path1,path2,path3,path4,file_name,movements=[0,1,2,3]):
+        self.path1=path1
+        self.path2=path2
+        self.path3 = path2
+        self.path4 = path2
         predictors_train,outcomes_train,predictors_test,outcomes_test = self.prepare_data(movements)
         model = self.svm_model(predictors_train,outcomes_train)
 
