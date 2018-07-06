@@ -1,5 +1,9 @@
 from sklearn.externals import joblib
-
+import numpy as np
+import pandas as pd
+from scipy.signal import butter,lfilter,filtfilt
+from scipy import stats
+from sklearn import svm
 class EMG_Model():
 
     def filteration (self,data,sample_rate=2000.0,cut_off=20.0,order=5,ftype='highpass'): 
@@ -97,7 +101,6 @@ class EMG_Model():
             
             ff=self.features_extraction(window_df)
             x.append(ff)
-            
         predictors_array=np.array(x)
 
         nsamples, nx, ny = predictors_array.shape
@@ -167,9 +170,9 @@ class EMG_Model():
         return model
 
     def accuracy(self,model):
-        return model.score(predictors_test,outcomes_test)*100
+        return model.score(self.predictors_test,self.outcomes_test)*100
 
-    def save_model(model,filename):
+    def save_model(self,model,filename):
         joblib.dump(model, filename)
 
 
@@ -177,9 +180,9 @@ class EMG_Model():
     def all_steps(self,path1,path2,path3,path4,file_name,movements=[0,1,2,3]):
         self.path1=path1
         self.path2=path2
-        self.path3 = path2
-        self.path4 = path2
-        predictors_train,outcomes_train,predictors_test,outcomes_test = self.prepare_data(movements)
+        self.path3=path3
+        self.path4=path4
+        predictors_train,outcomes_train,self.predictors_test,self.outcomes_test = self.prepare_data(movements)
         model = self.svm_model(predictors_train,outcomes_train)
 
         #if you wanna accuracy
@@ -187,4 +190,7 @@ class EMG_Model():
 
         #save pickle
         self.save_model(model,file_name)
+if __name__ == '__main__':
+    e=EMG_Model()
+    e.all_steps(path1="0.csv",path2="1.csv",path3="2.csv",path4="3.csv",file_name="Hannon.pickle")
 
