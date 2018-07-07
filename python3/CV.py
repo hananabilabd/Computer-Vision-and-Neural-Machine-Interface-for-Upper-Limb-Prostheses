@@ -65,10 +65,15 @@ from scipy.signal import butter, lfilter, filtfilt
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import svm
 from scipy import stats
-
+import random
 class CV():
     def __init__(self, queue_size=8):
         self.q = queue.Queue()
+        self.stage = 0
+        self.corrections = 0
+        self.all_grasps = [1, 2, 3, 4]
+        self.Choose_grasp = list( self.all_grasps )
+        self.grasp1=None
 
     def rgb2gray(self,rgb_image):
         return np.dot( rgb_image, [0.299, 0.587, 0.114] )
@@ -112,21 +117,22 @@ class CV():
         return model
 
 
-    def grasp_type(self,path_of_test_real, model_name):
+    def grasp_type(self,path, Mname):
         """
         path_of_test_real : the path of the uploaded image in case of offline.
         model_name: the name of the trained model, 'tmp.h5'
 
         """
-
+        #f = h5py.File( Mname, 'r' )
+        #f.close()
         n_row = 48
         n_col = 36
         nc = 1
         model = self.Nazarpour_model( (n_row, n_col, nc), num_of_layers=2 )
         model.compile( 'adam', loss='categorical_crossentropy', metrics=['accuracy'] )
-        model.load_weights( model_name )
+        model.load_weights(self.path1)
 
-        i = misc.imread( path_of_test_real )
+        i = misc.imread(self.model_name )
         img_after_preprocess = self.real_preprocess( i )
         x = np.expand_dims( img_after_preprocess, axis=0 )
         x = x.reshape( (1, n_row, n_col, nc) )
@@ -135,82 +141,126 @@ class CV():
 
         return grasp
 
-    def Main_algorithm(self,path1,path2=None):
-        #    event.wait()
-        self.stage = 0  # I changed it to random number not zero just for test. retrun it back!!
-        corrections = 0
-        all_grasps = [1, 2, 3, 4]
-        Choose_grasp = list( all_grasps )
 
-        self.path_of_real_test = path1  # put the path of the tested picture
+
+
+
+
+
+    def Main_algorithm(self,path1,path2=None):
+        #f = h5py.File( '../tools/GP_Weights.h5', 'r' )
+        #f.close()
+
+        #self.path_of_real_test = path1  # put the path of the tested picture
+        self.path1 = path1
         if path2:
             self.model_name = path2
-        else :
-            self.model_name='tools/class 1/50_r110.png'
+        else:
+            self.model_name = '../tools/class 1/50_r110.png'
 
-        while not(self.q.empty()):  # not(q.empty())):
+
+
+
+        #    path_of_real_test='/home/ghadir/Downloads/__/class 1/50_r110.png' #put the path of the tested picture
+        #    CV_model_name='GP_Weights.h5'
+        # """
+
+        while not (self.q.empty()):
             EMG_class_recieved = self.q.get()
-            if (EMG_class_recieved == 0 or self.stage == 0):
+            if (EMG_class_recieved == 5 or self.stage == 0):
                 print(("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage )))
                 self.System_power( 1 )  # Start system
 
-            elif (EMG_class_recieved == 1):
-                print(("EMG_class {0}, stage {1} : \n".format( EMG_class_recieved, stage )))
+            elif (EMG_class_recieved == 17):
+                print(("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage )))
                 self.Confirmation()
 
-            elif (EMG_class_recieved == 2):
-                print(("EMG_class {0}, stage {1} : \n".format( EMG_class_recieved, self.stage )))
+            elif (EMG_class_recieved == 15):
+                print(("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage )))
                 self.Cancellation()
 
-            elif (EMG_class_recieved == 3):
-                print(("EMG_class {0}, stage {1} : \n".format( EMG_class_recieved, self.stage )))
+            elif (EMG_class_recieved == 0):
+                print(("EMG_class {0}, Stage {1} : \n".format( EMG_class_recieved, self.stage )))
                 self.System_power( 0 )  # Turn system off
 
     def System_power(self,Turn_on):
+
+
+
         # Reset values:
         self.stage = 0
-        corrections = 0
-        Choose_grasp = list( all_grasps )
+        #    corrections= 0
+        self.Choose_grasp = list( self.all_grasps )
 
         if not Turn_on:
+            self.corrections = 0
             # Turn off
-            print ("Turning off ... \n\n\n")
+            print ("Turning off ... back to rest state. \n\n\n")
         else:
-            # Restart
-            print ("Restarting ... \n")
-            grasp = grasp_type( self.path_of_real_test, self.model_name )
-            print(('Grasp type no.{0} \n'.format( grasp )))
+            # Start/restart
+            self.grasp1 = self.grasp_type( self.path1, self.model_name )
+            #self.grasp1 = self.grasp_type( 'ww.h5', '../tools/class 1/50_r110.png' )
+
+            print(('Preshaping grasp type {}\n\n').format( self.grasp1 ))
             self.stage = 1
 
     def Confirmation(self):
+
+
         print("    Confirmed! \n")
-        if self.stage < 3:
+        if self.stage < 2:
             self.stage += 1
-            corrections = 0
-            Choose_grasp = list( all_grasps )
-            print ('Grasping \n')
+            self.corrections = 0
+            self.Choose_grasp = list( self.all_grasps )
+            print(("Grasping ... grasp type{} \n\n").format( self.grasp1 ))
             # Do the action
-        elif self.stage == 2:
+        else:
             print ('Releasing ... \n')
-            System_power( 0 )
+            self.System_power( 0 )
+
 
     def Cancellation(self):
+
+
+
         if self.stage > 0:
-            if (self.stage == 2 and corrections > 3):
+            print("    Cancelled! \n")
+            self.stage -= 1
+            #        corrections +=1
+            if (self.stage == 0 and self.corrections > 3):
                 print("Exceeded maximum iteration: \n Choosing from remaining grasps")
-                Choose_grasp.remove( grasp )
-                # Choose random class
+                if self.Choose_grasp:
+                    if self.grasp1 in self.Choose_grasp:
+                        self.Choose_grasp.remove( self.grasp1 )
+                else:
+                    self.Choose_grasp = list( self.all_grasps )
+                    self.corrections = 0
+                self.grasp1 = random.SystemRandom().choice( self.Choose_grasp )
+                print(('preshaping grasp type {}\n\n').format( self.grasp1 ))
+                self.stage = 1
             else:
-                print("    Cancelled! \n")
-                self.stage -= 1
-                corrections += 1
-                # Redo previous action
+                # Redo previous action:
+                if self.stage == 0:
+                    self.System_power( 1 )
+                    self.corrections += 1
+                    print ("Restarting ... \n")
+                elif self.stage == 1:
+                    print(('Preshaping grasp type {}\n\n').format( self.grasp1 ))
+                elif self.stage == 2:
+                    print(("Grasping ... grasp type{} \n\n").format( self.grasp1 ))
+            print(("Correction no. {}").format( self.corrections + 1 ))
+
+
         else:
-            print ('No previous self.stage, restarting ... \n')
-            System_power( 1 )
+            print ('No previous stage, restarting ... \n')
+            self.System_power( 1 )
 
 
-#q = queue.Queue()
+
+
+
+
+            #q = queue.Queue()
 
 
 
@@ -222,7 +272,7 @@ Stages meanings:
 3: Releasing
 """
 
-#cv =CV()
+
 
 
 
@@ -236,6 +286,9 @@ Stages meanings:
 # t2.start()
 
 # t1.join()
-#grasp = cv.grasp_type( 'tools/class 1/50_r110.png', 'tools/GP_Weights.h5' )
+#cv =CV()
+#grasp = cv.grasp_type( '../tools/class 1/50_r110.png', '../tools/GP_Weights.h5' )
 #print ('Grasp type no.{0} \n'.format( grasp ))
+#cv.q.put(5)
+#cv.Main_algorithm(path1='../tools/GP_Weights.h5')
 

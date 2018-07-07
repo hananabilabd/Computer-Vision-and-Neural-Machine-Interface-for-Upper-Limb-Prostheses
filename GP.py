@@ -120,6 +120,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.pushButton_20.setStyleSheet( "background-color: green" )
         self.pushButton_24.clicked.connect( self.stop_thread4 )
         self.pushButton_24.setStyleSheet( "background-color: red" )
+        self.pushButton_25.clicked.connect( QtCore.QCoreApplication.instance().quit )
         self.path1=self.path2=self.path3=self.path4=self.path5 =self.path6 = self.path7 =self.path8 =None
 
         palette = QtGui.QPalette()
@@ -144,12 +145,14 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def start_thread2(self):##Predict
         self.listen.EMG = np.empty( [0, 8] )
+        self.cv.q.queue.clear()
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread2 = True
         self.thread2 = threading.Thread(target = self.loop2)
         self.thread2.start()
     def start_thread4(self):##System
         self.listen.EMG = np.empty( [0, 8] )
+        self.cv.q.queue.clear()
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread4 = True
         self.thread4 = threading.Thread(target = self.loop4)
@@ -195,13 +198,13 @@ class Main(QMainWindow, Ui_MainWindow):
         self.thread0 = None
         self.listen.EMG = np.empty( [0, 8] )
 
-    def stop_thread1(self):
+    def stop_thread1(self):##Graph1
         self.listen.hub.stop()
         self.flag_thread1 = False
         self.thread1 = None
         self.listen.EMG = np.empty( [0, 8] )
 
-    def stop_thread2(self):
+    def stop_thread2(self):##Predict
         self.listen.hub.stop()
         self.flag_thread2 = False
         #self.event_stop_thread2.set()
