@@ -232,11 +232,11 @@ class CV():
                 if self.Choose_grasp:
                     if self.grasp1 in self.Choose_grasp:
                         self.Choose_grasp.remove( self.grasp1 )
-                else:
+                if not self.Choose_grasp: #To check if list is empty after removing an element.
                     self.Choose_grasp = list( self.all_grasps )
                     self.corrections = 0
                 self.grasp1 = random.SystemRandom().choice( self.Choose_grasp )
-                print(('preshaping grasp type {}\n\n').format( self.grasp1 ))
+                print(('Preshaping grasp type {}\n\n').format( self.grasp1 ))
                 self.stage = 1
             else:
                 # Redo previous action:
