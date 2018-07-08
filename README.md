@@ -22,7 +22,7 @@ To install TensorFlow, start a terminal. Then issue the appropriate pip3 install
  $ pip3 install --upgrade tensorflow
 ```
 To install the GPU version of TensorFlow, enter the following command:
-```python
+```cmd
  $ pip3 install --upgrade tensorflow-gpu
 ```
 
