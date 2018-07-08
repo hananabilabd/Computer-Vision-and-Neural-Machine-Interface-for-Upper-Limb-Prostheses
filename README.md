@@ -19,11 +19,11 @@ Installing it  with native pip
 To install TensorFlow, start a terminal. Then issue the appropriate pip3 install command in that terminal. To install the CPU-only version of TensorFlow, enter the following command:
 
 ```python 
-C:\> pip3 install --upgrade tensorflow
+$ pip3 install --upgrade tensorflow
 ```
 To install the GPU version of TensorFlow, enter the following command:
 ```python
-C:\> pip3 install --upgrade tensorflow-gpu
+$ pip3 install --upgrade tensorflow-gpu
 ```
 
 ## Installation  PyQt4 on Windows 
