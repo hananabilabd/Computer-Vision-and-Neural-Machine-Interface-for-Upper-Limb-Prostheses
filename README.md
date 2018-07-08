@@ -2,17 +2,29 @@
 Python module to get data from a Myo armband using a generic Bluetooth LE interface.
 
 ## Installation and usage of [MYO-Python](https://github.com/NiklasRosenstein/myo-python)
--	First you need to install myo-python library with the command PIP
--	Second you need to put myo-sdk into Environment Variables like this  
+1.	First you need to install myo-python library with the command PIP
+2.	Second you need to put myo-sdk into Environment Variables like this  
 ![](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshot/screenshot.png)
 
--	You need to run ArmBand Manager and choose to connect the myo 
--	Then open any of the examples codes , it should run then
--	Thanks 
-
-
-
+3. You need to run ArmBand Manager and choose to connect the myo 
+4.	Then open any of the examples codes , it should run then
+5.	Thanks 
 The Myo-Python module **only works on Windows**, 
+## Installation  TensorFlow on Windows 
+Unfortunately until Now TensorFlow supports Python 3.5.x or 3.6.x  64-bit  only on Windows Till now 
+I strongly recommend just to download Winpython from [here](https://winpython.github.io/) or [here](https://sourceforge.net/projects/winpython/files/?source=navbar) Package if you don't have python 3 
+
+Installing it  with native pip
+
+To install TensorFlow, start a terminal. Then issue the appropriate pip3 install command in that terminal. To install the CPU-only version of TensorFlow, enter the following command:
+
+```python 
+C:\> pip3 install --upgrade tensorflow
+```
+To install the GPU version of TensorFlow, enter the following command:
+```python
+C:\> pip3 install --upgrade tensorflow-gpu
+```
 
 ## Installation  PyQt4 on Windows 
 1. if You already have PyQt5 just Run :
