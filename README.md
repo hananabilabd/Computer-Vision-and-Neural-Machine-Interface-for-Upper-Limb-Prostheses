@@ -26,6 +26,17 @@ pip uninstall PyQt5
    ```
 
 ### Screenshots
-![GitHub Logo](https:.PNG)
-![](https://github..PNG)
-![alt text](https://github.co.PNG)
+EMG Plot Graph1:
+![GitHub Logo](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/1.PNG)
+
+EMG Plot Graph2:
+![](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/2.PNG)
+
+EMG Training:
+![alt text](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/3.PNG)
+
+EMG Testing:
+![alt text](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/4.PNG)
+
+Computer Vision & EMG system Test:
+![alt text](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/5.PNG)
