@@ -161,7 +161,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.cv.q.queue.clear()
         self.cv.stage = 0
         self.cv.corrections = 0
-        self.grasp1 = None
+        self.cv.grasp1 = None
+        self.cv.path1 =None
         self.listen = EMG.Listener()
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread4 = True
@@ -232,9 +233,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.cv.q.queue.clear()
         self.c = np.array([])
         self.listen.emg_total =np.empty( [0, 8] )
-        f = h5py.File( self.path9, 'r' )
-        f.close()
-        self.cv= None
+        #f = h5py.File( self.path9, 'r' )
+        #f.close()
         print (("Thread Closed "))
 
 
