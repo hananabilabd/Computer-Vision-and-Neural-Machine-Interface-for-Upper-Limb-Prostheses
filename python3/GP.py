@@ -22,6 +22,7 @@ import collections
 #import Queue as queue ##If python 2
 import queue  ##If python 3
 import pandas as pd
+import h5py
 Ui_MainWindow, QMainWindow = loadUiType('GP.ui')
 
 class XStream(QObject):
@@ -120,6 +121,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.pushButton_20.setStyleSheet( "background-color: green" )
         self.pushButton_24.clicked.connect( self.stop_thread4 )
         self.pushButton_24.setStyleSheet( "background-color: red" )
+        assert isinstance( QtCore.QCoreApplication.instance().quit,object )
         self.pushButton_25.clicked.connect( QtCore.QCoreApplication.instance().quit )
         self.path1=self.path2=self.path3=self.path4=self.path5 =self.path6 = self.path7 =self.path8 =None
 
@@ -145,17 +147,26 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def start_thread2(self):##Predict
         self.listen.EMG = np.empty( [0, 8] )
+        self.listen.emg_total = np.empty( [0, 8] )
         self.cv.q.queue.clear()
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread2 = True
         self.thread2 = threading.Thread(target = self.loop2)
+        self.thread2.daemon = True
         self.thread2.start()
     def start_thread4(self):##System
+
         self.listen.EMG = np.empty( [0, 8] )
+        self.listen.emg_total = np.empty( [0, 8] )
         self.cv.q.queue.clear()
+        self.cv.stage = 0
+        self.cv.corrections = 0
+        self.grasp1 = None
+        self.listen = EMG.Listener()
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread4 = True
         self.thread4 = threading.Thread(target = self.loop4)
+        self.thread4.daemon =True
         self.thread4.start()
         
 
@@ -175,9 +186,8 @@ class Main(QMainWindow, Ui_MainWindow):
         while self.flag_thread2 :
             #self.update_predict()
             c = self.listen.predict(path =self.path7)
-            if not c == None :
-                self.cv.q.put(int(c))
-                print((self.cv.q.queue))
+            if not c.size ==0 :
+                print ((c))
             time.sleep(0.05)
 
 
@@ -185,9 +195,9 @@ class Main(QMainWindow, Ui_MainWindow):
     def loop4(self):##System
         while self.flag_thread4 :
             #self.update_predict()
-            c = self.listen.predict(path =self.path8)
-            if not c == None :
-                self.cv.q.put(int(c))
+            self.c = self.listen.predict(path =self.path8)
+            if  not self.c.size ==0 :
+                self.cv.q.put(int(self.c))
                 print((self.cv.q.queue))
                 self.cv.Main_algorithm(path1=self.path9)
             time.sleep(0.05)
@@ -211,12 +221,22 @@ class Main(QMainWindow, Ui_MainWindow):
         #self.thread2.join()
         self.thread2 = None
         self.listen.EMG = np.empty( [0, 8] )
-
-    def stop_thread4(self):
+        self.cv.q.queue.clear()
+        #self.c = np.array( [] )
+        
+    def stop_thread4(self):##System
         self.listen.hub.stop()
         self.flag_thread4 = False
         self.thread4 = None
         self.listen.EMG = np.empty( [0, 8] )
+        self.cv.q.queue.clear()
+        self.c = np.array([])
+        self.listen.emg_total =np.empty( [0, 8] )
+        f = h5py.File( self.path9, 'r' )
+        f.close()
+        self.cv= None
+        print (("Thread Closed "))
+
 
 
         

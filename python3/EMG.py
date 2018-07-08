@@ -134,6 +134,7 @@ class Listener(myo.DeviceListener):
       n= self.EMG.shape[0]
       self.emg_total = np.append( self.emg_total, self.EMG[:n], axis=0 )
       self.EMG = self.EMG[n:]
+      return np.array([])
 
 
 
