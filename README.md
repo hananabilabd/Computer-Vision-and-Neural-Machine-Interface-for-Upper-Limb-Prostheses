@@ -14,11 +14,17 @@ Python module to get data from a Myo armband using a generic Bluetooth LE interf
 
 The Myo-Python module **only works on Windows**, 
 
-## Installation  PyQt4
- ```python
- sudo apt update
- sudo apt install pyqt4-dev-tools
- ```
+## Installation  PyQt4 on Windows 
+1. if You already have PyQt5 just Run :
+```python
+pip uninstall PyQt5
+```
+2. download the package from this [website](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyqt4) according to your python Version (python 2 or 3 )
+3. cd to directory of the downloaded package
+4. ```python
+   pip install packageName.whl
+   ```
+
 ### Screenshots
 ![GitHub Logo](https:.PNG)
 ![](https://github..PNG)
