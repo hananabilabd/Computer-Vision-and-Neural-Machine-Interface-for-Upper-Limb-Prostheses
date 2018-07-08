@@ -1,5 +1,4 @@
-# This Project is Created on Windows Using MYO ArmBand with MYO-Python
-Python module to get data from a Myo armband using a generic Bluetooth LE interface.
+# This Project is Created on Windows Using MYO ArmBand with [MYO-Python](https://github.com/NiklasRosenstein/myo-python)
 
 ## Installation and usage of [MYO-Python](https://github.com/NiklasRosenstein/myo-python)
 1.	First you need to install myo-python library with the command PIP
