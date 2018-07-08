@@ -16,13 +16,12 @@ import random
 import sys, time
 import threading
 import EMG
-import CV
+#import CV
 import EMG_Model
 import collections
 #import Queue as queue ##If python 2
 import queue  ##If python 3
 import pandas as pd
-import h5py
 Ui_MainWindow, QMainWindow = loadUiType('GP.ui')
 
 class XStream(QObject):
@@ -39,7 +38,7 @@ class XStream(QObject):
 
     def write( self, msg ):
         if ( not self.signalsBlocked() ):
-            self.messageWritten.emit(str(msg))
+            self.messageWritten.emit(unicode(msg))
 
     @staticmethod
     def stdout():
@@ -64,7 +63,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.listen=EMG.Listener()
         self.EMG_Modeling =EMG_Model.EMG_Model()
-        self.cv =CV.CV()
+        #self.cv =CV.CV()
 
         XStream.stdout().messageWritten.connect( self.textBrowser.insertPlainText )
         XStream.stdout().messageWritten.connect( self.textBrowser.ensureCursorVisible )
@@ -121,7 +120,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.pushButton_20.setStyleSheet( "background-color: green" )
         self.pushButton_24.clicked.connect( self.stop_thread4 )
         self.pushButton_24.setStyleSheet( "background-color: red" )
-        assert isinstance( QtCore.QCoreApplication.instance().quit,object )
         self.pushButton_25.clicked.connect( QtCore.QCoreApplication.instance().quit )
         self.path1=self.path2=self.path3=self.path4=self.path5 =self.path6 = self.path7 =self.path8 =None
 
@@ -147,27 +145,17 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def start_thread2(self):##Predict
         self.listen.EMG = np.empty( [0, 8] )
-        self.listen.emg_total = np.empty( [0, 8] )
         self.cv.q.queue.clear()
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread2 = True
         self.thread2 = threading.Thread(target = self.loop2)
-        self.thread2.daemon = True
         self.thread2.start()
     def start_thread4(self):##System
-
         self.listen.EMG = np.empty( [0, 8] )
-        self.listen.emg_total = np.empty( [0, 8] )
         self.cv.q.queue.clear()
-        self.cv.stage = 0
-        self.cv.corrections = 0
-        self.cv.grasp1 = None
-        self.cv.path1 =None
-        self.listen = EMG.Listener()
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread4 = True
         self.thread4 = threading.Thread(target = self.loop4)
-        self.thread4.daemon =True
         self.thread4.start()
         
 
@@ -187,8 +175,9 @@ class Main(QMainWindow, Ui_MainWindow):
         while self.flag_thread2 :
             #self.update_predict()
             c = self.listen.predict(path =self.path7)
-            if not c.size ==0 :
-                print ((c))
+            if not c == None :
+                self.cv.q.put(int(c))
+                print (self.cv.q.queue)
             time.sleep(0.05)
 
 
@@ -196,10 +185,10 @@ class Main(QMainWindow, Ui_MainWindow):
     def loop4(self):##System
         while self.flag_thread4 :
             #self.update_predict()
-            self.c = self.listen.predict(path =self.path8)
-            if  not self.c.size ==0 :
-                self.cv.q.put(int(self.c))
-                print((self.cv.q.queue))
+            c = self.listen.predict(path =self.path8)
+            if not c == None :
+                self.cv.q.put(int(c))
+                print (self.cv.q.queue)
                 self.cv.Main_algorithm(path1=self.path9)
             time.sleep(0.05)
                 
@@ -222,21 +211,12 @@ class Main(QMainWindow, Ui_MainWindow):
         #self.thread2.join()
         self.thread2 = None
         self.listen.EMG = np.empty( [0, 8] )
-        self.cv.q.queue.clear()
-        #self.c = np.array( [] )
-        
-    def stop_thread4(self):##System
+
+    def stop_thread4(self):
         self.listen.hub.stop()
         self.flag_thread4 = False
         self.thread4 = None
         self.listen.EMG = np.empty( [0, 8] )
-        self.cv.q.queue.clear()
-        self.c = np.array([])
-        self.listen.emg_total =np.empty( [0, 8] )
-        #f = h5py.File( self.path9, 'r' )
-        #f.close()
-        print (("Thread Closed "))
-
 
 
         
@@ -276,7 +256,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def file_save_csv(self):
 
         self.path = QtGui.QFileDialog.getSaveFileName(self, 'Save Point', "", '*.csv')
-        print((" Path = %s" %self.path))
+        print (" Path = %s" %self.path)
         self.records=int(self.lineEdit.text())
         self.listen.EMG = np.empty( [0, 8] )
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
@@ -288,12 +268,12 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def save_loop(self):
         while self.listen.EMG.shape[0] < self.records:
-            print((self.listen.EMG.shape[0]))
+            print (self.listen.EMG.shape[0])
             time.sleep( 0.01 )
         self.listen.hub.stop()
         np.savetxt( str( self.path ), self.listen.EMG, delimiter=",", fmt='%10.5f' )
         self.listen.EMG = np.empty( [0, 8] )
-        print(("saved Sucessfully at %s" % self.path))
+        print ("saved Sucessfully at %s" % self.path)
         self.thread3 = None
 
     def browseCSVEMGModel1(self):
@@ -301,41 +281,41 @@ class Main(QMainWindow, Ui_MainWindow):
         filepath = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.csv' )
         self.lineEdit_2.setText( filepath)
         self.path1 = str( filepath )
-        print((" Path = %s" % self.path1))
+        print (" Path = %s" % self.path1)
         #self.records = int( self.lineEdit.text() )
     def browseCSVEMGModel2(self):
 
         filepath = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.csv' )
         self.lineEdit_6.setText( filepath)
         self.path2 = str( filepath )
-        print((" Path = %s" % self.path2))
+        print (" Path = %s" % self.path2)
     def browseCSVEMGModel3(self):
         filepath = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.csv' )
         self.lineEdit_7.setText( filepath)
         self.path3 = str( filepath )
-        print((" Path = %s" % self.path3))
+        print (" Path = %s" % self.path3)
     def browseCSVEMGModel4(self):
 
         filepath = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.csv' )
         self.lineEdit_8.setText( filepath)
         self.path4 = str( filepath )
-        print((" Path = %s" % self.path4))
+        print (" Path = %s" % self.path4)
     def saveEMGModel(self):
         if not self.path1 ==None and not self.path2 ==None  and not self.path3 ==None and not self.path4 ==None :
             filepath = QtGui.QFileDialog.getSaveFileName( self, 'Save Point', "", '*.pickle' )
 
             self.EMG_Modeling.all_steps(path1=self.path1,path2=self.path2,path3=self.path3,path4=self.path4,file_name=str(filepath))
-            print((" Saved SuccessFully at = %s" % filepath))
+            print (" Saved SuccessFully at = %s" % filepath)
     def  joinCSV1(self):
 
         self.path5 = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.csv' )
         self.lineEdit_9.setText( self.path5)
-        print((" Path = %s" % self.path5))
+        print (" Path = %s" % self.path5)
     def  joinCSV2(self):
 
         self.path6 = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.csv' )
         self.lineEdit_10.setText( self.path6)
-        print((" Path = %s" % self.path6))
+        print (" Path = %s" % self.path6)
     def saveJoinCSV(self):
         if not self.path5 ==None and not self.path6 ==None :
             filepath = QtGui.QFileDialog.getSaveFileName( self, 'Save Point', "", '*.csv' )
@@ -344,22 +324,22 @@ class Main(QMainWindow, Ui_MainWindow):
             b = pd.read_csv( str( self.path6 ) , header=None ,index_col =False)
             c = pd.concat( [a, b] )
             c.to_csv( str(filepath),index=False, header=None )
-            print((" Saved SuccessFully at = %s" % filepath))
+            print (" Saved SuccessFully at = %s" % filepath)
     def browsePickleEMGModel1(self):
         filepath = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.pickle' )
         self.lineEdit_3.setText( filepath)
         self.path7 = str( filepath )
-        print((" Path = %s" % self.path7))
+        print (" Path = %s" % self.path7)
     def browsePickleEMGModel2(self):
         filepath = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.pickle')
         self.lineEdit_4.setText( filepath)
         self.path8 = str( filepath )
-        print((" Path = %s" % self.path8))
+        print (" Path = %s" % self.path8)
     def browseCVModel(self):
         filepath = QtGui.QFileDialog.getOpenFileName( self, 'Single File', "", '*.h5' )
         self.lineEdit_5.setText( filepath)
         self.path9 = str( filepath )
-        print((" Path = %s" % self.path9))
+        print (" Path = %s" % self.path9)
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ from sklearn import svm
 class EMG_Model():
 
     def filteration (self,data,sample_rate=2000.0,cut_off=20.0,order=5,ftype='highpass'): 
-        nyq = 0.5 * sample_rate
+        nyq = .5 * sample_rate
         b,a=butter(order,cut_off/nyq,btype=ftype)
         d= lfilter(b,a,data,axis=0)
         return pd.DataFrame(d)
@@ -46,7 +46,7 @@ class EMG_Model():
         WL = []
         SSC= []
         ZC = []
-        for col,series in df.iteritems():
+        for col,series in df.items():
             #F2 : wave length (WL)
             s=abs(np.array(series.iloc[:-1])- np.array(series.iloc[1:]))
             WL_result=np.sum(s)
@@ -116,11 +116,12 @@ class EMG_Model():
         e3 = pd.read_csv( self.path3, header=None )
         e4 = pd.read_csv( self.path4, header=None )
         rows = min( e1.shape[0], e2[1].shape[0], e3[2].shape[0], e4[3].shape[0] )
-        e1 = pd.read_csv( self.path1, nrows=rows, header=None )
-        e2 = pd.read_csv( self.path2, nrows=rows, header=None )
-        e3 = pd.read_csv( self.path3, nrows=rows, header=None )
-        e4 = pd.read_csv( self.path4, nrows=rows, header=None )
-        e = [e1, e2, e3, e4]
+        e1 = pd.read_csv( self.path1, nrows =rows,header=None )
+        e2 = pd.read_csv( self.path2 ,nrows =rows,header=None )
+        e3 = pd.read_csv( self.path3,nrows =rows, header=None )
+        e4 = pd.read_csv( self.path4,nrows =rows, header=None )
+        e = [e1,e2,e3,e4]
+
 
         rep = []
         reps =rows // 6 if rows % 6 == 0 else (rows //6)+1
@@ -134,7 +135,7 @@ class EMG_Model():
 
         for i in intended_movement_labels:
             #emg_set[i] = pd.read_csv('models/' +str(i)+".csv" ,nrows =rows,header=None)
-            emg_set[i] =e[i]
+            emg_set[i] = e[i]
             emg_set[i]['label'] = i
             emg_set[i].columns = [1,2,3,4,5,6,7,8,'label']
             emg_set[i]['rep'] = rep
@@ -192,7 +193,7 @@ class EMG_Model():
         model = self.svm_model(predictors_train,outcomes_train)
 
         #if you wanna accuracy
-        print (self.accuracy(model))
+        print((self.accuracy(model)))
 
         #save pickle
         self.save_model(model,file_name)

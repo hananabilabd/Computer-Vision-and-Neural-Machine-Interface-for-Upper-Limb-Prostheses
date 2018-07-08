@@ -53,7 +53,7 @@ class Listener(myo.DeviceListener):
     #print (listener.get_emg_data())
     #emgs = np.array([x[1] for x in listener.get_emg_data()]).T
     emgs = np.array( [x[0] for x in self.get_emg_data()] )
-    print((emgs.shape))
+    print (emgs.shape)
 
   def filteration(self, data, sample_rate=2000.0, cut_off=20.0, order=5, ftype='highpass'):
     nyq = .5 * sample_rate
@@ -76,7 +76,7 @@ class Listener(myo.DeviceListener):
     WL = []
     SSC = []
     ZC = []
-    for col, series in df.items():
+    for col, series in df.iteritems():
       # F2 : wave length (WL)
       s = abs( np.array( series.iloc[:-1] ) - np.array( series.iloc[1:] ) )
       WL_result = np.sum( s )
@@ -134,7 +134,6 @@ class Listener(myo.DeviceListener):
       n= self.EMG.shape[0]
       self.emg_total = np.append( self.emg_total, self.EMG[:n], axis=0 )
       self.EMG = self.EMG[n:]
-      return np.array([])
 
 
 
