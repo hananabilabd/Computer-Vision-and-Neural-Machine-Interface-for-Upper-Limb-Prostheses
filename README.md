@@ -33,7 +33,8 @@ $ pip uninstall PyQt5
 ```
 2. download the package from this [website](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyqt4) according to your python Version (python 2 or 3 )
 3. cd to directory of the downloaded package
-4. ```cmd
+4.
+```cmd
 $ pip install packageName.whl
    ```
 
