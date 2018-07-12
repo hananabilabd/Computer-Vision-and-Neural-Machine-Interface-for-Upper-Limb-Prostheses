@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="photos">
+    <file>thalmic.ico</file>
+    <file>Tifa.jpg</file>
+  </qresource>
+</RCC>

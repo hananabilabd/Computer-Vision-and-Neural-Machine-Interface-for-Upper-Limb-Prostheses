@@ -1,15 +1,8 @@
 import numpy as np
-from matplotlib.pyplot import axvline, axhline
-import matplotlib.pyplot as plt
 from PyQt4.uic import loadUiType
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QObject,pyqtSignal
-import matplotlib.backends.backend_qt4agg
-from matplotlib.figure import Figure
-#from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,NavigationToolbar2QT as NavigationToolbar)
-import serial  # import Serial Library
-#from drawnow import *
 import pyqtgraph as pg
 import pyqtgraph
 import random

@@ -1,15 +1,14 @@
-import numpy as np
-import scipy.io as sio
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.signal import butter,lfilter,filtfilt
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn import svm
-from scipy import stats
-from sklearn.linear_model import SGDClassifier
+#import scipy.io as sio
+#from sklearn.neighbors import KNeighborsClassifier
+#from sklearn import svm
+#from scipy import stats
+#from sklearn.linear_model import SGDClassifier
+#import sys
+#import collections
 from sklearn.externals import joblib
-import sys
-import collections
+from scipy.signal import butter,lfilter,filtfilt
+import numpy as np
+import pandas as pd
 import myo
 import threading
 import time
@@ -21,7 +20,7 @@ class Listener(myo.DeviceListener):
     self.lock = threading.Lock()
     myo.init()
     self.hub = myo.Hub()
-    self.emg_data_queue = collections.deque(maxlen=queue_size)
+    #self.emg_data_queue = collections.deque(maxlen=queue_size)
     self.EMG = np.empty([0, 8])
     self.predictions_array = []
     self.prediction_array = np.empty( [0] )

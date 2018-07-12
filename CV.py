@@ -1,71 +1,55 @@
-# coding: utf-8
-
-# In[86]:
-
-
 # PROBLEMS:
 #  1-EMG: fail to predict the right class
 # 2-Error in the CV
 # https://github.com/keras-team/keras/wiki/Converting-convolution-kernels-from-Theano-to-TensorFlow-and-vice-versa
 # https://stackoverflow.com/questions/49287934/dask-dataframe-prediction-of-keras-model/49290185?noredirect=1#comment85587469_49290185
-
-# create new h5 in backend Theano
-
-
 # !pip install -q keras
 import keras
 import h5py
-
-import os
 import numpy as np
-import cv2
-import matplotlib.pyplot as plt
-import pandas as pd
-from scipy import misc, ndimage
-from skimage import io
 import random
-from itertools import chain
-from sklearn.preprocessing import LabelBinarizer
-import io
-from sklearn.externals import joblib
-import pickle
-# keras pakages
-from keras import layers
-from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, \
-    AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D
-from keras.layers import Dropout, LeakyReLU
-from keras.models import Model, load_model
-from keras.preprocessing import image
-from keras.utils import layer_utils
-from keras.utils.data_utils import get_file
-from keras.applications.imagenet_utils import preprocess_input
-from IPython.display import SVG
-from keras.utils.vis_utils import model_to_dot
-from keras.utils import plot_model
-from keras.initializers import glorot_uniform
-import scipy.misc
-from matplotlib.pyplot import imshow
-# get_ipython().magic(u'matplotlib inline')
-from keras.models import model_from_json
-import keras.backend as K
-
-K.set_image_data_format( 'channels_last' )
-K.set_learning_phase( 1 )
-
-import threading
-import os
-import numpy as np
-import cv2
-import time
-from collections import Counter
+from scipy import misc #, ndimage
 import queue  ##If python 3
 # import Queue as queue ##If python 2
-import scipy.io as sio
-from scipy.signal import butter, lfilter, filtfilt
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn import svm
-from scipy import stats
-import random
+import threading
+#import time
+#import cv2
+#import matplotlib.pyplot as plt
+#import pandas as pd
+#from skimage import io
+#from itertools import chain
+#from sklearn.preprocessing import LabelBinarizer
+#import io
+#from sklearn.externals import joblib
+#import pickle
+# keras pakages
+#from keras import layers
+#from keras.layers import   LeakyReLU , AveragePooling2D ,GlobalMaxPooling2D  ,ZeroPadding2D
+from keras.layers import Input, Add, Dense, Activation,Dropout , BatchNormalization, Flatten, Conv2D,MaxPooling2D
+from keras.models import Model #, load_model
+from keras.preprocessing import image
+from keras.initializers import glorot_uniform
+#from keras.utils import layer_utils
+#from keras.utils.data_utils import get_file
+#from keras.applications.imagenet_utils import preprocess_input
+#from IPython.display import SVG
+#from keras.utils.vis_utils import model_to_dot
+#from keras.utils import plot_model
+#import scipy.misc
+#from matplotlib.pyplot import imshow
+# get_ipython().magic(u'matplotlib inline')
+#from keras.models import model_from_json
+#import keras.backend as K
+#K.set_image_data_format( 'channels_last' )
+#K.set_learning_phase( 1 )
+
+#import os
+#from collections import Counter
+#import scipy.io as sio
+#from scipy.signal import butter, lfilter, filtfilt
+#from sklearn.neighbors import KNeighborsClassifier
+#from sklearn import svm
+#from scipy import stats
 class CV():
     def __init__(self, queue_size=8):
         self.q = queue.Queue()
@@ -156,7 +140,7 @@ class CV():
         if path2:
             self.model_name = path2
         else:
-            self.model_name = '../tools/class 1/50_r110.png'
+            self.model_name = 'tools/class 1/50_r110.png'
 
 
 
