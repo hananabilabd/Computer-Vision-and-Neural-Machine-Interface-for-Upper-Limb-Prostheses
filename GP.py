@@ -295,7 +295,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.cv.corrections = 0
         self.cv.grasp1 = None
         self.cv.path1 =None
-        self.listen = EMG.Listener()
+        #self.listen = EMG.Listener()
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread4 = True
         self.thread4 = threading.Thread(target = self.loop4)
@@ -349,10 +349,10 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def loop4(self):##System
         while self.flag_thread4 :
-            #self.update_predict()
             self.c = self.listen.predict(path =self.path8)
-            if  not self.c.size ==0 :
-                self.cv.q.put(int(self.c))
+            #print( ("C {0} : \n".format( self.c)) )
+            if   self.c.size  ==1 :
+                self.cv.q.put(int (self.c))
                 print((self.cv.q.queue))
                 self.cv.Main_algorithm(path1=self.path9)
             time.sleep(0.05)
@@ -361,7 +361,7 @@ class Main(QMainWindow, Ui_MainWindow):
             #print( (threading.active_count()) )
             #print( (threading.enumerate()) )
             c = self.listen.predict(path =self.path10)
-            if  not c.size ==0 :
+            if   c.size ==1 :
                 self.CV_realtime.q.put(int(c))
                 print((self.CV_realtime.q.queue))
                 self.CV_realtime.Main_algorithm()
@@ -397,18 +397,23 @@ class Main(QMainWindow, Ui_MainWindow):
         self.cv.q.queue.clear()
         self.c = np.array([])
         self.listen.emg_total =np.empty( [0, 8] )
+        self.listen.EMG =np.empty( [0, 8] )
+        print( ("Thread Of System Closed ") )
         #f = h5py.File( self.path9, 'r' )
         #f.close()
-        print (("Thread Closed "))
+        #self.cv.finish()
+        #self.cv.kk()
 
-    def stop_thread5(self):##System
+
+
+    def stop_thread5(self):##Online_System
         self.listen.hub.stop()
         self.flag_thread5 = False
         self.thread5 = None
         self.listen.EMG = np.empty( [0, 8] )
         self.CV_realtime.q.queue.clear()
         self.listen.emg_total =np.empty( [0, 8] )
-        print (("Thread Closed "))
+        print (("Thread Of Online System is Closed "))
 
 
 

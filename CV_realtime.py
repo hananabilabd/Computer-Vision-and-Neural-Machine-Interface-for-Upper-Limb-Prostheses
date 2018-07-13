@@ -11,8 +11,7 @@ import time
 import random
 import queue  ##If python 3
 # import Queue as queue ##If python 2
-# Initialize global variables to be used by the classification thread
-# and load up the network and save it as a tensorflow graph
+
 
 class MyThread(threading.Thread):
     def __init__(self):
@@ -20,8 +19,6 @@ class MyThread(threading.Thread):
         self.label = ''
         self.frame_to_predict = None
         self.classification = True
-        self.model = ResNet50( weights='imagenet' )
-        self.graph = tf.get_default_graph()
         self.score = .0
         ###
         self.q = queue.Queue()
@@ -32,7 +29,7 @@ class MyThread(threading.Thread):
         self.grasp1 = None
         ###
         print( 'Loading network...' )
-        # self.model = VGG16(weights='imagenet')
+        #self.model = VGG16(weights='imagenet')
         self.model = ResNet50( weights='imagenet' )
         self.graph = tf.get_default_graph()
         print( 'Network loaded successfully!' )

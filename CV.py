@@ -8,6 +8,7 @@
 import h5py
 import numpy as np
 import random
+import time
 from scipy import misc #, ndimage
 import queue  ##If python 3
 # import Queue as queue ##If python 2
@@ -25,10 +26,14 @@ import threading
 # keras pakages
 #from keras import layers
 #from keras.layers import   LeakyReLU , AveragePooling2D ,GlobalMaxPooling2D  ,ZeroPadding2D
+###############
 from keras.layers import Input, Add, Dense, Activation,Dropout , BatchNormalization, Flatten, Conv2D,MaxPooling2D
 from keras.models import Model #, load_model
-from keras.preprocessing import image
 from keras.initializers import glorot_uniform
+from keras import backend as K
+import tensorflow as tf
+############
+#from keras.preprocessing import image
 #from keras.utils import layer_utils
 #from keras.utils.data_utils import get_file
 #from keras.applications.imagenet_utils import preprocess_input
@@ -50,6 +55,8 @@ from keras.initializers import glorot_uniform
 #from sklearn.neighbors import KNeighborsClassifier
 #from sklearn import svm
 #from scipy import stats
+#global graph
+#graph = tf.get_default_graph()
 class CV():
     def __init__(self, queue_size=8):
         self.q = queue.Queue()
@@ -58,6 +65,7 @@ class CV():
         self.all_grasps = [1, 2, 3, 4]
         self.Choose_grasp = list( self.all_grasps )
         self.grasp1=None
+        self.graph = tf.get_default_graph()
 
     def rgb2gray(self,rgb_image):
         return np.dot( rgb_image, [0.299, 0.587, 0.114] )
@@ -66,36 +74,27 @@ class CV():
     def real_preprocess(self,img):
         # gray level
         img_gray = self.rgb2gray( img )
-
         # resize the image 48x36:
         img_resize = misc.imresize( img_gray, (48, 36) )
-
         # Normalization:
         img_norm = (img_resize - img_resize.mean()) / img_resize.std()
-
         return img_norm
 
 
     def Nazarpour_model(self,input_shape, num_of_layers=2):
         x_input = Input( input_shape )
-
         x = Conv2D( 5, (5, 5), strides=(1, 1), padding='valid' )( x_input )
         x = BatchNormalization( axis=3 )( x )
         x = Activation( 'relu' )( x )
         x = Dropout( 0.2 )( x )
-
         if num_of_layers == 2:
             x = Conv2D( 25, (5, 5), strides=(1, 1), padding='valid' )( x )
             x = BatchNormalization( axis=3 )( x )
             x = Activation( 'relu' )( x )
-
         x = MaxPooling2D( (2, 2), strides=(2, 2) )( x )
         x = Dropout( 0.2 )( x )
-
         x = Flatten()( x )
-
         x = Dense( 4, activation='softmax', kernel_initializer=glorot_uniform( seed=0 ) )( x )
-
         model = Model( inputs=x_input, outputs=x )
 
         return model
@@ -112,16 +111,17 @@ class CV():
         n_row = 48
         n_col = 36
         nc = 1
+
         model = self.Nazarpour_model( (n_row, n_col, nc), num_of_layers=2 )
         model.compile( 'adam', loss='categorical_crossentropy', metrics=['accuracy'] )
         model.load_weights(self.path1)
-
         i = misc.imread(self.model_name )
         img_after_preprocess = self.real_preprocess( i )
         x = np.expand_dims( img_after_preprocess, axis=0 )
         x = x.reshape( (1, n_row, n_col, nc) )
         out = model.predict( x )
         grasp = np.argmax( out ) + 1
+
         if grasp == 1 :
             print( ("Grasp_Type : Pinch \n ") )
         if grasp == 2 :
@@ -132,8 +132,31 @@ class CV():
             print( ("Grasp_Type : Palmar Wrist Pronated \n ") )
         return grasp
 
+    def kk (self):
+        #if K.backend() == 'tensorflow':
+        K.clear_session()
+        tf.reset_default_graph()
 
+    def new_session(self):
+        if K.backend() == 'tensorflow':  # pragma: no cover
+            import tensorflow as tf
+            K.clear_session()
+            config = tf.ConfigProto( allow_soft_placement=True )
+            config.gpu_options.allow_growth = True
+            session = tf.Session( config=config )
+            K.set_session( session )
 
+    def tt(self):
+        threading.Thread( target= K.clear_session() ).start()
+    def finish(self):
+        import keras.backend.tensorflow_backend
+        if keras.backend.tensorflow_backend._SESSION:
+            import tensorflow as tf
+            tf.reset_default_graph()
+            keras.backend.tensorflow_backend._SESSION.close()
+            keras.backend.tensorflow_backend._SESSION = None
+        #from keras import backend as K
+        #K.clear_session()
 
 
 
@@ -189,7 +212,8 @@ class CV():
             print ("Turning off ... back to rest state. \n\n\n")
         else:
             # Start/restart
-            self.grasp1 = self.grasp_type( self.path1, self.model_name )
+            with self.graph.as_default():
+                self.grasp1 = self.grasp_type( self.path1, self.model_name )
             #self.grasp1 = self.grasp_type( 'ww.h5', '../tools/class 1/50_r110.png' )
 
             print(('Preshaping grasp type {}\n\n').format( self.grasp1 ))
@@ -277,9 +301,24 @@ Stages meanings:
 # t2.start()
 
 # t1.join()
-#cv =CV()
-#grasp = cv.grasp_type( '../tools/class 1/50_r110.png', '../tools/GP_Weights.h5' )
-#print ('Grasp type no.{0} \n'.format( grasp ))
-#cv.q.put(5)
-#cv.Main_algorithm(path1='../tools/GP_Weights.h5')
 
+#cv =CV()
+#grasp = cv.grasp_type( 'tools/class 1/50_r110.png', 'tools/GP_Weights.h5' )
+#print ('Grasp type no.{0} \n'.format( grasp ))
+"""
+cv.q.put(2)
+cv.q.put(1)
+while(1):
+    #cv.kk()
+    time.sleep(2)
+    cv.q.put( 2 )
+    cv.q.put( 1 )
+
+    print (("Hiii"))
+    #threading.Thread( target= cv.Main_algorithm(path1='tools/GP_Weights.h5')).start()
+    cv.q.put(1)
+    cv.q.put(1)
+    #with graph.as_default():
+    cv.Main_algorithm(path1='tools/GP_Weights.h5')
+
+"""
