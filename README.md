@@ -51,5 +51,8 @@ EMG Training:
 EMG Testing:
 ![alt text](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/4.PNG)
 
-Computer Vision & EMG system Test:
+Offline Computer Vision & Online EMG system Test:
 ![alt text](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/5.PNG)
+
+Online Computer Vision & Online EMG system Test:
+![alt text](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/6.PNG)
