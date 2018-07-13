@@ -4,7 +4,7 @@
 # https://github.com/keras-team/keras/wiki/Converting-convolution-kernels-from-Theano-to-TensorFlow-and-vice-versa
 # https://stackoverflow.com/questions/49287934/dask-dataframe-prediction-of-keras-model/49290185?noredirect=1#comment85587469_49290185
 # !pip install -q keras
-import keras
+#import keras
 import h5py
 import numpy as np
 import random
@@ -122,7 +122,14 @@ class CV():
         x = x.reshape( (1, n_row, n_col, nc) )
         out = model.predict( x )
         grasp = np.argmax( out ) + 1
-
+        if grasp == 1 :
+            print( ("Grasp_Type : Pinch \n ") )
+        if grasp == 2 :
+            print( ("Grasp_Type  : Palmar Wrist Neutral \n ") )
+        if grasp == 3 :
+            print( ("Grasp_Type  : Tripod \n ") )
+        if grasp == 4 :
+            print( ("Grasp_Type : Palmar Wrist Pronated \n ") )
         return grasp
 
 

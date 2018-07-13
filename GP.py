@@ -495,7 +495,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def saveEMGModel(self):
         if not self.path1 ==None and not self.path2 ==None  and not self.path3 ==None and not self.path4 ==None :
             filepath = QtGui.QFileDialog.getSaveFileName( self, 'Save Point', "", '*.pickle' )
-
+            print ((" path is  = %s" % str(filepath)))
             self.EMG_Modeling.all_steps(path1=self.path1,path2=self.path2,path3=self.path3,path4=self.path4,file_name=str(filepath))
             print((" Saved SuccessFully at = %s" % filepath))
     def  joinCSV1(self):
