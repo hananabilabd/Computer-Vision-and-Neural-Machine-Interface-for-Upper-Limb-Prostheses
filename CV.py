@@ -96,7 +96,6 @@ class CV():
         x = Flatten()( x )
         x = Dense( 4, activation='softmax', kernel_initializer=glorot_uniform( seed=0 ) )( x )
         model = Model( inputs=x_input, outputs=x )
-
         return model
 
 
@@ -123,13 +122,13 @@ class CV():
         grasp = np.argmax( out ) + 1
 
         if grasp == 1 :
-            print( ("Grasp_Type : Pinch \n ") )
+            print( ("Grasp_Type : Pinch  , Class = 1 \n ") )
         if grasp == 2 :
-            print( ("Grasp_Type  : Palmar Wrist Neutral \n ") )
+            print( ("Grasp_Type  : Palmar Wrist Neutral , Class = 2 \n ") )
         if grasp == 3 :
-            print( ("Grasp_Type  : Tripod \n ") )
+            print( ("Grasp_Type  : Tripod , Class = 3 \n ") )
         if grasp == 4 :
-            print( ("Grasp_Type : Palmar Wrist Pronated \n ") )
+            print( ("Grasp_Type : Palmar Wrist Pronated,, Class = 4 \n ") )
         return grasp
 
     def kk (self):
