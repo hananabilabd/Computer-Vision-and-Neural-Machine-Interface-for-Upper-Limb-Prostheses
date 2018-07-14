@@ -172,7 +172,7 @@ class Main(QMainWindow, Ui_MainWindow):
         #global running
         self.ImgWidget.setHidden( False)
         self.running = True
-        self.capture_thread = threading.Thread( target=self.grab, args=(1, self.q, 1920, 1080, 30) )
+        self.capture_thread = threading.Thread( target=self.grab, args=(0, self.q, 1920, 1080, 30) )
         self.capture_thread.daemon =True
         self.capture_thread.start()
         self.startButton.setEnabled( False )
@@ -181,7 +181,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.startButton.setText( 'Camera is live' )
     def grab(self,cam, queue, width, height, fps):
         #global running
-        self.capture = cv2.VideoCapture( 0 )
+        self.capture = cv2.VideoCapture( cam )
         self.capture.set( cv2.CAP_PROP_FRAME_WIDTH, width )
         self.capture.set( cv2.CAP_PROP_FRAME_HEIGHT, height )
         self.capture.set( cv2.CAP_PROP_FPS, fps )
