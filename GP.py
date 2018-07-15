@@ -181,7 +181,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.startButton.setText( 'Camera is live' )
     def grab(self,cam, queue, width, height, fps):
         #global running
-        self.capture = cv2.VideoCapture( cam )
+        self.capture = cv2.VideoCapture(0)
         self.capture.set( cv2.CAP_PROP_FRAME_WIDTH, width )
         self.capture.set( cv2.CAP_PROP_FRAME_HEIGHT, height )
         self.capture.set( cv2.CAP_PROP_FPS, fps )
