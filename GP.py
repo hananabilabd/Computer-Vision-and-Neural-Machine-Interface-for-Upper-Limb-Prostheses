@@ -219,9 +219,9 @@ class Main(QMainWindow, Ui_MainWindow):
             self.CV_realtimeFlag2 = 1
             self.CV_realtime.daemon = True
             self.CV_realtime.start()
-        print ((threading.active_count()))
-        print ((threading.enumerate()))
-        print ((threading.current_thread()))
+        #print ((threading.active_count()))
+        #print ((threading.enumerate()))
+        #print ((threading.current_thread()))
         self.pushButton_27.setEnabled( False )
         self.pushButton_28.setEnabled( True )
     def stop_cvRealtime(self):
