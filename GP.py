@@ -465,6 +465,7 @@ class Main(QMainWindow, Ui_MainWindow):
         print((" Path = %s" %self.path))
         self.records=int(self.lineEdit.text())
         self.listen.EMG = np.empty( [0, 8] )
+        self.listen.emg_total=np.empty( [0, 8] )
         threading.Thread( target=lambda: self.listen.hub.run_forever( self.listen.on_event ) ).start()
         self.flag_thread3 = True
         self.thread3 = threading.Thread( target=self.save_loop )
