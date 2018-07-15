@@ -162,7 +162,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.timer.start( 1 )
         ####
         self.pushButton_29.clicked.connect( self.browsePickleEMGModel3 )
-        self.pushButton_30.clicked.connect( self.start_thread5)
+        self.pushButton_30.clicked.connect( self.start_thread5)##   Start Real-Time system
         self.pushButton_31.clicked.connect( self.stop_thread5 )
         self.pushButton_30.setStyleSheet( "background-color: green" )
         self.pushButton_31.setStyleSheet( "background-color: red" )
@@ -172,7 +172,7 @@ class Main(QMainWindow, Ui_MainWindow):
         #global running
         self.ImgWidget.setHidden( False)
         self.running = True
-        self.capture_thread = threading.Thread( target=self.grab, args=(0, self.q, 1920, 1080, 30) )
+        self.capture_thread = threading.Thread( target=self.grab, args=(0, self.q, 2500, 1080, 30) )##Original (0, self.q, 1920, 1080, 30)
         self.capture_thread.daemon =True
         self.capture_thread.start()
         self.startButton.setEnabled( False )
@@ -181,7 +181,13 @@ class Main(QMainWindow, Ui_MainWindow):
         self.startButton.setText( 'Camera is live' )
     def grab(self,cam, queue, width, height, fps):
         #global running
-        self.capture = cv2.VideoCapture(0)
+        if self.radioButton.isChecked():
+            cam =0
+        elif self.radioButton_2.isChecked():
+            cam =1
+        else :
+            cam =0
+        self.capture = cv2.VideoCapture(cam)
         self.capture.set( cv2.CAP_PROP_FRAME_WIDTH, width )
         self.capture.set( cv2.CAP_PROP_FRAME_HEIGHT, height )
         self.capture.set( cv2.CAP_PROP_FPS, fps )
@@ -193,10 +199,11 @@ class Main(QMainWindow, Ui_MainWindow):
             # Resize the frame to fit the imageNet default input size
             if self.CV_realtimeFlag is not None :
                 self.CV_realtime.frame_to_predict = cv2.resize( original_frame, (224, 224) )
-                # Add text label and network score to the video captue
-                cv2.putText( original_frame, "Label: %s | Score: %.2f" % (self.CV_realtime.label, self.CV_realtime.score), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,0.9, (0, 255, 0), 2 )
+                if self.checkBox.isChecked():
+                    # Add text label and network score to the video captue
+                    cv2.putText( original_frame, "Label: %s | Score: %.2f" % (self.CV_realtime.label, self.CV_realtime.score), (15, 60), cv2.FONT_HERSHEY_SIMPLEX,0.9, (0, 255, 0), 2 )
 
-                cv2.putText(original_frame, " Name: %s| Class: %d " % (self.CV_realtime.grasp_name, self.CV_realtime.grasp_number),(10, 690),cv2.FONT_HERSHEY_SIMPLEX,1,(255, 0, 0),2 )
+                cv2.putText(original_frame, "Name: %s| Class: %d " % (self.CV_realtime.grasp_name, self.CV_realtime.grasp_number),(0, 25),cv2.FONT_HERSHEY_SIMPLEX,1,(255, 0, 0),2 )
             self.capture.grab()
             # retval, img = capture.retrieve( 0 )
             frame["img"] = original_frame
