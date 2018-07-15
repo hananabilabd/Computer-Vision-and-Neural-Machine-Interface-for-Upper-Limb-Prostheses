@@ -14,7 +14,6 @@ import CV_realtime
 #import Queue as queue ##If python 2
 import queue  ##If python 3
 import pandas as pd
-import h5py
 import cv2
 
 #sys.path.append(os.path.dirname(__file__))
@@ -172,7 +171,7 @@ class Main(QMainWindow, Ui_MainWindow):
         #global running
         self.ImgWidget.setHidden( False)
         self.running = True
-        self.capture_thread = threading.Thread( target=self.grab, args=(0, self.q, 2500, 1080, 30) )##Original (0, self.q, 1920, 1080, 30)
+        self.capture_thread = threading.Thread( target=self.grab, args=(0, self.q, 1920, 1080, 30) )##Original (0, self.q, 1920, 1080, 30)
         self.capture_thread.daemon =True
         self.capture_thread.start()
         self.startButton.setEnabled( False )
