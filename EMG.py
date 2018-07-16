@@ -27,7 +27,7 @@ class Listener(myo.DeviceListener):
     self.emg_total = np.empty( [0, 8] )
     self.flag_Graph1 = None
     self.flag_Predict = 0
-    # self.set_GP_instance(GP)
+    #self.set_GP_instance(GP)
 
   def set_GP_instance(self, GP):
     self.GP = GP
@@ -48,11 +48,7 @@ class Listener(myo.DeviceListener):
     with self.lock:
       return list(self.emg_data_queue)
 
-  def plot_main(self):
-    #print (listener.get_emg_data())
-    #emgs = np.array([x[1] for x in listener.get_emg_data()]).T
-    emgs = np.array( [x[0] for x in self.get_emg_data()] )
-    print((emgs.shape))
+
 
   def filteration(self, data, sample_rate=2000.0, cut_off=20.0, order=5, ftype='highpass'):
     nyq = .5 * sample_rate
