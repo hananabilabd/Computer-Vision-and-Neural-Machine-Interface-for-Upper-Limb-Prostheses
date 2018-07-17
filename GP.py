@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt4.uic import loadUiType
 from PyQt4 import QtCore, QtGui
-#from PyQt4.QtGui import *
+from PyQt4.QtGui import *
 from PyQt4.QtCore import QObject,pyqtSignal
 #import pyqtgraph as pg
 #import pyqtgraph
@@ -66,10 +66,28 @@ class OwnImageWidget( QtGui.QWidget ):
         if self.image:
             qp.drawImage( QtCore.QPoint( 0, 0 ), self.image )
         qp.end()
-
+class LoadImageThread( QtCore.QThread ):
+    def __init__(self, file, w, h):
+        QtCore.QThread.__init__( self )
+        self.file = file
+        self.w = w
+        self.h = h
+    def __del__(self):
+        self.wait()
+    def run(self):
+        self.emit( QtCore.SIGNAL( 'showImage(QString, int, int)' ), self.file, self.w, self.h )
+class LoadImageThread2( QtCore.QThread ):
+    def __init__(self, file, w, h):
+        QtCore.QThread.__init__( self )
+        self.file = file
+        self.w = w
+        self.h = h
+    def __del__(self):
+        self.wait()
+    def run(self):
+        self.emit( QtCore.SIGNAL( 'showImage2(QString, int, int)' ), self.file, self.w, self.h )
 
 class Main(QMainWindow, Ui_MainWindow):
-
 
     def __init__(self, parent=None):
         #pyqtgraph.setConfigOption('background', 'w')  # before loading widget
@@ -165,6 +183,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.pushButton_31.clicked.connect( self.stop_thread5 )
         self.pushButton_30.setStyleSheet( "background-color: green" )
         self.pushButton_31.setStyleSheet( "background-color: red" )
+
+
 
 
     def start_camera(self):
@@ -285,7 +305,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.thread1 = threading.Thread(target = self.loop1)
         self.thread1.start()
 
-    def start_thread2(self):##Predict
+    def start_thread2(self):##Predict_EMG
         self.listen.EMG = np.empty( [0, 8] )
         self.listen.emg_total = np.empty( [0, 8] )
         self.cv.q.queue.clear()
@@ -349,9 +369,10 @@ class Main(QMainWindow, Ui_MainWindow):
         while self.flag_thread2 :
             #self.update_predict()
             c = self.listen.predict(path =self.path7)
-            if not c.size ==0 :
+            if  c.size ==1 :
                 print ((c))
-            time.sleep(0.05)
+                self.someFunctionCalledFromAnotherThread2(int(c))
+            #time.sleep(0.05)
 
 
 
@@ -371,10 +392,62 @@ class Main(QMainWindow, Ui_MainWindow):
             c = self.listen.predict(path =self.path10)
             if   c.size ==1 :
                 self.CV_realtime.q.put(int(c))
-                print((self.CV_realtime.q.queue))
+                #print((self.CV_realtime.q.queue))
                 self.CV_realtime.Main_algorithm()
-            #time.sleep(0.05)
-                
+                #self.draw_grasp(self.CV_realtime.grasp1)
+                if  self.CV_realtime.final is not None :
+                    self.someFunctionCalledFromAnotherThread(self.CV_realtime.final)
+
+            #time.sleep(1)
+
+
+    def someFunctionCalledFromAnotherThread(self,grasp):
+        if grasp == 1:
+            thread = LoadImageThread( file="screenshots/pinch.png", w=204, h=165 )
+            self.connect( thread, QtCore.SIGNAL( "showImage(QString, int, int)" ), self.showImage )
+            thread.start()
+        elif grasp == 2:
+            thread = LoadImageThread( file="screenshots/palmar_neutral.png", w=238, h=158 )
+            self.connect( thread, QtCore.SIGNAL( "showImage(QString, int, int)" ), self.showImage )
+            thread.start()
+        elif grasp == 3:
+            thread = LoadImageThread( file="screenshots/tripod.png", w=242, h=162 )
+            self.connect( thread, QtCore.SIGNAL( "showImage(QString, int, int)" ), self.showImage )
+            thread.start()
+        elif grasp == 4:
+            thread = LoadImageThread( file="screenshots/palmar_pronated.png", w=219, h=165 )
+            self.connect( thread, QtCore.SIGNAL( "showImage(QString, int, int)" ), self.showImage)
+            thread.start()
+
+    def showImage(self, filename, w, h):
+        pixmap = QtGui.QPixmap( filename ).scaled( w, h )
+        self.label_13.setPixmap( pixmap )
+        self.label_13.repaint()
+    def someFunctionCalledFromAnotherThread2(self,EMG_class):
+        if EMG_class == 1:
+            thread = LoadImageThread2( file="screenshots/finger_spread.png", w=278, h=299 )
+            self.connect( thread, QtCore.SIGNAL( "showImage2(QString, int, int)" ), self.showImage2 )
+            thread.start()
+        elif EMG_class == 2:
+            thread = LoadImageThread2( file="screenshots/wrist_extension.png", w=348, h=302 )
+            self.connect( thread, QtCore.SIGNAL( "showImage2(QString, int, int)" ), self.showImage2 )
+            thread.start()
+        elif EMG_class == 3:
+            thread = LoadImageThread2( file="screenshots/wrist_ulnar_deviation.png", w=283, h=254)
+            self.connect( thread, QtCore.SIGNAL( "showImage2(QString, int, int)" ), self.showImage2 )
+            thread.start()
+        elif EMG_class == 0:
+            thread = LoadImageThread2( file="screenshots/rest.png", w=353, h=254 )
+            self.connect( thread, QtCore.SIGNAL( "showImage2(QString, int, int)" ), self.showImage2)
+            thread.start()
+
+    def showImage2(self, filename, w, h):
+        pixmap = QtGui.QPixmap( filename ).scaled( w, h )
+        self.label_15.setPixmap( pixmap )
+        self.label_15.repaint()
+
+
+
     def stop_thread0(self):
         self.listen.hub.stop()
         self.flag_thread0 =False

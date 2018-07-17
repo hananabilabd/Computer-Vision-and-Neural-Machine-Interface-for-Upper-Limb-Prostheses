@@ -115,7 +115,6 @@ class Listener(myo.DeviceListener):
   def predict(self , path):
     if self.emg_total.shape[0] >= 512:
       self.flag_Predict =1
-      #print ("Hiiii")
       self.emg_total = np.append( self.emg_total, self.EMG[:128], axis=0 )
       self.EMG = self.EMG[128:]
       data = pd.DataFrame( self.emg_total )
