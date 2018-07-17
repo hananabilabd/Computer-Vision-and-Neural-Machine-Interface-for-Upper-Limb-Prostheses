@@ -16,8 +16,6 @@ import queue  ##If python 3
 import pandas as pd
 import cv2
 
-#sys.path.append(os.path.dirname(__file__))
-#Ui_MainWindow, QMainWindow = loadUiType(os.path.join(os.path.dirname(__file__), 'GP.ui'), resource_suffix='')
 Ui_MainWindow, QMainWindow = loadUiType('GP.ui')
 
 class XStream(QObject):
@@ -628,9 +626,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
 if __name__ == '__main__':
 
-
     app = QtGui.QApplication(sys.argv)
-    #app.setWindowIcon( QtGui.QIcon( 'x.png' ) )
     main = Main()
     main.setWindowIcon( QtGui.QIcon( 'screenshots/x.png' ) )
     main.show()

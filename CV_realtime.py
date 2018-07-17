@@ -110,16 +110,8 @@ class MyThread(threading.Thread):
                 self.System_power( 0 )  # Turn system off
 
     def System_power(self,Turn_on):
-
-
-
-        # Reset values:
-        #self.stage = 0
-        #    corrections= 0
-        #self.Choose_grasp = list( self.all_grasps )
-
         if not Turn_on:
-            #self.corrections = 0
+
             # Turn off
             print ("Turning off ... back to rest state.")
         else:
@@ -128,61 +120,22 @@ class MyThread(threading.Thread):
 
             print(('grasp type {} \n').format( self.grasp1 ))
             self.flag1=1
-            #self.stage = 1
+
 
     def Confirmation(self):
-
-
         print("    Confirmed!")
-        #if self.stage < 2:
-            #self.stage += 1
-            #self.corrections = 0
-        #self.Choose_grasp = list( self.all_grasps )
         self.final =self.grasp1
         print(("Grasping ... grasp type{} \n").format( self.grasp1 ))
         self.flag1=None
-            # Do the action
-        #else:
-            #print ('Releasing ... \n')
-            #self.System_power( 0 )
+
 
 
     def Cancellation(self):
-
-
-
         #if self.stage > 0:
         print("    Cancelled! \n")
         self.flag1 =None
-            #self.stage -= 1
-            #        corrections +=1
-            #if (self.stage == 0 and self.corrections > 3):
-                #print("Exceeded maximum iteration: \n Choosing from remaining grasps")
-                #if self.Choose_grasp:
-                    #if self.grasp1 in self.Choose_grasp:
-                        #self.Choose_grasp.remove( self.grasp1 )
-                #if not self.Choose_grasp: #To check if list is empty after removing an element.
-                    #self.Choose_grasp = list( self.all_grasps )
-                    #self.corrections = 0
-                #self.grasp1 = random.SystemRandom().choice( self.Choose_grasp )
-                #print(('Preshaping grasp type {}\n\n').format( self.grasp1 ))
-                #self.stage = 1
-            #else:
-                # Redo previous action:
-                #if self.stage == 0:
-                    #self.System_power( 1 )
-                    #self.corrections += 1
-                    #print ("Restarting ... \n")
-                #elif self.stage == 1:
-                    #print(('Preshaping grasp type {}\n\n').format( self.grasp1 ))
-                #elif self.stage == 2:
-                    #print(("Grasping ... grasp type{} \n\n").format( self.grasp1 ))
-            #print(("Correction no. {}").format( self.corrections + 1 ))
 
 
-        #else:
-            #print ('No previous stage, restarting ... \n')
-            #self.System_power( 1 )
 
 # Start a keras thread which will classify the frame returned by openCV
 #keras_thread = MyThread()
