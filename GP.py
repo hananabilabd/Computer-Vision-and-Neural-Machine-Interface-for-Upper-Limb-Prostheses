@@ -398,7 +398,7 @@ class Main(QMainWindow, Ui_MainWindow):
                 if  self.CV_realtime.final is not None :
                     self.someFunctionCalledFromAnotherThread(self.CV_realtime.final)
 
-            #time.sleep(1)
+            time.sleep(0.1)
 
 
     def someFunctionCalledFromAnotherThread(self,grasp):

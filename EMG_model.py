@@ -122,7 +122,6 @@ class EMG_Model():
         e4 = pd.read_csv( self.path4,nrows =rows, header=None )
         e = [e1,e2,e3,e4]
 
-
         rep = []
         reps =rows // 6 if rows % 6 == 0 else (rows //6)+1
 
@@ -131,7 +130,6 @@ class EMG_Model():
                 rep.append(i)
 
         rep = rep[:rows]
-
 
         for i in intended_movement_labels:
             #emg_set[i] = pd.read_csv('models/' +str(i)+".csv" ,nrows =rows,header=None)
