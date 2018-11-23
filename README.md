@@ -37,7 +37,7 @@ $ pip uninstall PyQt5
 $ pip install packageName.whl
    ```
 ### Video  
-[Here](https://youtu.be/Z_KbUj3OziE)
+[Here](https://www.youtube.com/watch?v=_047z4P6DiE)
 ### Screenshots
 EMG Plot Graph1:
 ![GitHub Logo](https://github.com/hananabilabd/Computer-Vision-and-Neural-Machine-Interface-for-Upper-Limb-Prostheses/blob/master/screenshots/1.PNG)
